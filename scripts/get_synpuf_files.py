@@ -1,4 +1,4 @@
-import os,os.path,sys,datetime,subprocess,string
+import os,os.path,sys,datetime,subprocess,string,urllib.request,zipfile
 from time import strftime
 
 #------------------------
@@ -63,15 +63,8 @@ def download_synpuf_files(sample_directory, sample_number):
         file_url = 'http://{0}/{1}'.format(base_url, sp_file)
         file_local = os.path.join(download_directory,sp_file)
         print('..downloading -> ', file_url)
-
-        rc = subprocess.call(['wget','-4',
-                            file_url,
-                            '-O', file_local])
-
-        rc = subprocess.call(['unzip',
-                              '-u',                             # update / create files
-                              file_local,
-                              '-d',download_directory])
+        urllib.request.urlretrieve(file_url, file_local)
+        zipfile.ZipFile(file_local).extractall(download_directory)
 
 
     #-- combine the beneficiary files
