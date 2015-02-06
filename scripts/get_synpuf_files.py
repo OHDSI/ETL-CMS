@@ -26,8 +26,8 @@ def get_timestamp():
 #  combine the 3 beneficiary files into 1 file
 #-----------------------------------
 def download_synpuf_files(sample_directory, sample_number):
-    print '-'*80
-    print get_timestamp(),' download_synpuf_files starting: sample_number=',sample_number
+    print('-'*80)
+    print(get_timestamp(),' download_synpuf_files starting: sample_number=',sample_number)
 
     # as of 2015-02-06, files come from different places
     url_www_cms_gov        = 'www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/Downloads'
@@ -51,7 +51,7 @@ def download_synpuf_files(sample_directory, sample_number):
         sp_file = sp_file.replace('~~',str(sample_number))
         file_url = 'http://{0}/{1}'.format(base_url, sp_file)
         file_local = os.path.join(download_directory,sp_file)
-        print '..downloading -> ', file_url
+        print('..downloading -> ', file_url)
 
         rc = subprocess.call(['wget','-4',
                             file_url,
@@ -66,20 +66,20 @@ def download_synpuf_files(sample_directory, sample_number):
     #-- combine the beneficiary files
     combine_beneficiary_files(download_directory, download_directory, sample_number)
 
-    print get_timestamp(),' Done'
+    print(get_timestamp(),' Done')
 
 
 #-----------------------------------
 #- combine 3 beneficiary files into 1, with the year prefixed
 #-----------------------------------
 def combine_beneficiary_files(sample_directory, output_directory, sample_number):
-    print '-'*80
-    print get_timestamp(),' combine_beneficiary_files starting: sample_number=',sample_number
+    print('-'*80)
+    print(get_timestamp(),' combine_beneficiary_files starting: sample_number=',sample_number)
 
     output_bene_filename = os.path.join(output_directory ,
                         'DE1_0_comb_Beneficiary_Summary_File_Sample_{0}.csv'.format(sample_number))
 
-    print 'Writing to ->',output_bene_filename
+    print('Writing to ->',output_bene_filename)
     total_recs_in=0
     total_recs_out=0
 
@@ -87,29 +87,29 @@ def combine_beneficiary_files(sample_directory, output_directory, sample_number)
         for year in ['2008','2009','2010']:
             input_bene_filename = os.path.join(sample_directory,
                             'DE1_0_{0}_Beneficiary_Summary_File_Sample_{1}.csv'.format(year,sample_number))
-            print 'Reading    ->',input_bene_filename
+            print('Reading    ->',input_bene_filename)
             recs_in=0
             with open(input_bene_filename, 'r') as f_in:
                 for line in f_in:
                     recs_in+=1
-                    if recs_in % 25000 == 0: print 'Year-{0}: records read ={1}, total written={2}'.format(year,recs_in, total_recs_out)
+                    if recs_in % 25000 == 0: print('Year-{0}: records read ={1}, total written={2}'.format(year,recs_in, total_recs_out))
                     f_out.write(year + ',' + line)
                     total_recs_out+=1
-            print 'Year-{0}: total records read ={1}'.format(year,recs_in)
+            print('Year-{0}: total records read ={1}'.format(year,recs_in))
             total_recs_in+=recs_in
 
-    print get_timestamp(),' Done: total records read ={0}, total records written={1}'.format(total_recs_in, total_recs_out)
+    print(get_timestamp(),' Done: total records read ={0}, total records written={1}'.format(total_recs_in, total_recs_out))
 
 
 #-----------------------------------
 #-----------------------------------
 if __name__ == '__main__':
 
-    print get_timestamp(),' Combine Beneficiary Year files...starting'
+    print(get_timestamp(),' Combine Beneficiary Year files...starting')
 
-    print 'INPUT_DIRECTORY          =', INPUT_DIRECTORY
-    print 'OUTPUT_DIRECTORY         =', OUTPUT_DIRECTORY
-    print 'SAMPLE_RANGE             =', SAMPLE_RANGE
+    print('INPUT_DIRECTORY          =', INPUT_DIRECTORY)
+    print('OUTPUT_DIRECTORY         =', OUTPUT_DIRECTORY)
+    print('SAMPLE_RANGE             =', SAMPLE_RANGE)
 
     #------
     # download from CMS
@@ -117,4 +117,4 @@ if __name__ == '__main__':
     for sample_number in SAMPLE_RANGE:
         download_synpuf_files(INPUT_DIRECTORY, sample_number)
 
-    print get_timestamp(),' Done'
+    print(get_timestamp(),' Done')
