@@ -6,11 +6,24 @@ from time import strftime
 #  2015-02-06  RSD - requires Python 3.2+, takes command line arguments
 #------------------------
 
+# This script will download and unzip SynPUF files from CMS.
+#
+# To run this script, you must have Python 3.2+ installed on your system
+# From the command line, type:
+# python path/to/input path/to/output
+#
+# This will download SynPUF files and extract them into path/to/output
+#
+# The SynPUF files are split into 20 sets of files.
+#
+# For more information about SynPUF see:
+# http://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html
+
 #-----------------------------------
 #- set configuration parms
 #-----------------------------------
 
-# The only part of this script that required hand-editing was the INPUT/OUTPUT
+# The only part of this script that requires hand-editing was the INPUT/OUTPUT
 # directories.  Let us just read them from the command line.  This also
 # allows people to enter a Windows-based path.
 if len(sys.argv) < 3:
