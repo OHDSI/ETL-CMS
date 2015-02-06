@@ -21,7 +21,7 @@ if len(sys.argv) < 3:
 
 INPUT_DIRECTORY     = sys.argv[1]
 OUTPUT_DIRECTORY    = sys.argv[2]
-if not os.path.exists(OUTPUT_DIRECTORY): os.mkdir(OUTPUT_DIRECTORY)
+if not os.path.exists(OUTPUT_DIRECTORY): os.makedirs(OUTPUT_DIRECTORY)
 
 SAMPLE_RANGE = [4,15]
 
@@ -54,7 +54,7 @@ def download_synpuf_files(sample_directory, sample_number):
     ]
 
     download_directory = os.path.join(sample_directory,"DE_{0}".format(sample_number))
-    if not os.path.exists(download_directory): os.mkdir(download_directory)
+    if not os.path.exists(download_directory): os.makedirs(download_directory)
 
     for base_url,sp_file in synpuf_files:
         sp_file = sp_file.replace('~~',str(sample_number))
