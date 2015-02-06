@@ -10,8 +10,17 @@ from time import strftime
 #- set configuration parms
 #-----------------------------------
 
-INPUT_DIRECTORY     = '/home/ryan/tmp/synpuf/tmp'
-OUTPUT_DIRECTORY    = '/home/ryan/tmp/synpuf/tmp_2'
+# The only part of this script that required hand-editing was the INPUT/OUTPUT
+# directories.  Let us just read them from the command line.  This also
+# allows people to enter a Windows-based path.
+if len(sys.argv) < 3:
+    print("usage: get_synpuf_files.py path/to/input/directory path/to/output/directory")
+    print(sys.argv)
+    quit();
+
+
+INPUT_DIRECTORY     = sys.argv[1]
+OUTPUT_DIRECTORY    = sys.argv[2]
 if not os.path.exists(OUTPUT_DIRECTORY): os.mkdir(OUTPUT_DIRECTORY)
 
 SAMPLE_RANGE = [4,15]
