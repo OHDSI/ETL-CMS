@@ -2,8 +2,8 @@ import os,os.path,sys,datetime,subprocess,string
 from time import strftime
 
 #------------------------
-#  2015-02-05  D. O'Hara
-#   requires wget
+#  2015-02-05  D. O'Hara - requires wget
+#  2015-02-06  RSD - requires Python 3.2+, takes command line arguments
 #------------------------
 
 #-----------------------------------
@@ -56,6 +56,8 @@ def download_synpuf_files(sample_directory, sample_number):
     download_directory = os.path.join(sample_directory,"DE_{0}".format(sample_number))
     if not os.path.exists(download_directory): os.makedirs(download_directory)
 
+    # Is there a Python library we can leverage to do the downloading so
+    # we avoid the dependency on wget?
     for base_url,sp_file in synpuf_files:
         sp_file = sp_file.replace('~~',str(sample_number))
         file_url = 'http://{0}/{1}'.format(base_url, sp_file)
