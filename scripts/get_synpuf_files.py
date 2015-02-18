@@ -114,9 +114,19 @@ def combine_beneficiary_files(sample_directory, output_directory, sample_number)
             recs_in=0
             with open(input_bene_filename, 'r') as f_in:
                 for line in f_in:
+                    tyear = year
                     recs_in+=1
+                    # We need to use the header line from the first
+                    # file we encounter to serve as the header line for the
+                    # combined file, but skip all other header lines in the
+                    # remaining files
+                    if recs_in == 1:
+                        if total_recs_out == 0:
+                            tyear = '"YEAR"'
+                        else:
+                            continue
                     if recs_in % 25000 == 0: print('Year-{0}: records read ={1}, total written={2}'.format(year,recs_in, total_recs_out))
-                    f_out.write(year + ',' + line)
+                    f_out.write(tyear + ',' + line)
                     total_recs_out+=1
             print('Year-{0}: total records read ={1}'.format(year,recs_in))
             total_recs_in+=recs_in
