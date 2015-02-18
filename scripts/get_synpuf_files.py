@@ -74,9 +74,16 @@ def download_synpuf_files(sample_directory, sample_number):
         sp_file = sp_file.replace('~~',str(sample_number))
         file_url = 'http://{0}/{1}'.format(base_url, sp_file)
         file_local = os.path.join(download_directory,sp_file)
-        print('..downloading -> ', file_url)
-        urllib.request.urlretrieve(file_url, file_local)
-        zipfile.ZipFile(file_local).extractall(download_directory)
+        # If the file already exists, let's not download it again
+        # If a file is only partially downloaded, it will need to be deleted
+        # before running this script again.
+        if os.path.exists(file_local):
+            print('..already exists: skipping', file_local)
+            continue
+        else:
+            print('..downloading -> ', file_url)
+            urllib.request.urlretrieve(file_url, file_local)
+            zipfile.ZipFile(file_local).extractall(download_directory)
 
 
     #-- combine the beneficiary files
