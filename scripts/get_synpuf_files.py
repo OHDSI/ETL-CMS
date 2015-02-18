@@ -28,7 +28,6 @@ from time import strftime
 # allows people to enter a Windows-based path.
 if len(sys.argv) < 3:
     print("usage: get_synpuf_files.py path/to/input/directory path/to/output/directory")
-    print(sys.argv)
     quit();
 
 
