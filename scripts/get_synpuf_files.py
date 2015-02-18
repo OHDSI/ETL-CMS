@@ -4,6 +4,7 @@ from time import strftime
 #------------------------
 #  2015-02-05  D. O'Hara - requires wget
 #  2015-02-06  RSD - requires Python 3.2+, takes command line arguments
+#  2015-02-18  RSD - Fix combining CSVs, don't re-download existing files
 #------------------------
 
 # This script will download and unzip SynPUF files from CMS.
