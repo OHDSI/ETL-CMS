@@ -1,6 +1,7 @@
 import csv,os,os.path,sys
 from time import strftime
 import argparse
+import dotenv
 from constants import OMOP_CONSTANTS, OMOP_CONCEPT_RECORD, BENEFICIARY_SUMMARY_RECORD
 from utility_classes import Table_ID_Values
 from beneficiary import Beneficiary
@@ -58,24 +59,26 @@ from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, Carri
 #  2015-02-05  C. Dougherty         Created
 # ------------------------
 
-MAX_RECS                        = 100
+dotenv.load_dotenv(".env")
 
 # -----------------------------------
 # - Configuration
 # -----------------------------------
 # ---------------------------------
-BASE_SYNPUF_INPUT_DIRECTORY     = '/Data/OHDSI/CMS_SynPuf'
-BASE_OMOP_INPUT_DIRECTORY       = '/Data/OHDSI/OMOP/02_Vocabulary/Standard_Vocabulary_v5'
-RESOURCE_DIRECTORY              = '/Data/OHDSI/Resources'
-BASE_OUTPUT_DIRECTORY           = '/Data/Evidera/98_output'
 
-# ---------------------------------
-# running on windows local
-# ---------------------------------
-# BASE_SYNPUF_INPUT_DIRECTORY     = r'C:\Data\OHDSI\70_External\CMS_SynPuf'
-# BASE_OMOP_INPUT_DIRECTORY       = r'C:\Data\OHDSI\70_External\OMOP\02_Vocabulary\Standard_Vocabulary_v5'
-# RESOURCE_DIRECTORY              = r'C:\Data\OHDSI\70_External\Resources'
-# BASE_OUTPUT_DIRECTORY           = r'C:\Data\OHDSI\99_output\SynPuf'
+# Edit your .env file to change which directories to use in the ETL process
+
+# Maximum number of records to be processed before quitting
+MAX_RECS                        = os.environ['MAX_RECS'] or 100
+
+# Path to the directory containing the downloaded SynPUF files
+BASE_SYNPUF_INPUT_DIRECTORY     = os.environ['BASE_SYNPUF_INPUT_DIRECTORY']
+
+# Path to the directory containing the OMOP Vocabulary v5 files (can be downloaded from http://www.ohdsi.org/web/athena/)
+BASE_OMOP_INPUT_DIRECTORY       = os.environ['BASE_OMOP_INPUT_DIRECTORY']
+
+# Path to the directory where CDM-compatible CSV files should be saved
+BASE_OUTPUT_DIRECTORY           = os.environ['BASE_OUTPUT_DIRECTORY']
 
 DESTINATION_FILE_DRUG               = 'drug'
 DESTINATION_FILE_CONDITION          = 'condition'
