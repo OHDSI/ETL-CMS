@@ -16,7 +16,7 @@ from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, Carri
 #           BASE_OMOP_INPUT_DIRECTORY    /  'CONCEPT.csv'
 #
 #       SynPuf data files
-#           BASE_SYNPUF_INPUT_DIRECTORY 
+#           BASE_SYNPUF_INPUT_DIRECTORY
 #                             /  DE1_<sample_number>
 #                             /  DE1_0_2008_Beneficiary_Summary_File_Sample_<sample_number>.csv
 #                             /  DE1_0_2009_Beneficiary_Summary_File_Sample_<sample_number>.csv
@@ -28,7 +28,7 @@ from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, Carri
 #                             /  DE1_0_2008_to_2010_Prescription_Drug_Events_Sample_<sample_number>_B.csv
 #
 #  Output Produced:
-#     Lookup tables in pickle format:  
+#     Lookup tables in pickle format:
 #           BASE_SYNPUF_INPUT_DIRECTORY  /  icd_9_map_proc_decimals.pck
 #           BASE_SYNPUF_INPUT_DIRECTORY  /  ndc_dict.pck
 #           BASE_SYNPUF_INPUT_DIRECTORY  /  icd_9_proc_dict.pck
@@ -38,8 +38,8 @@ from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, Carri
 #           BASE_OUTPUT_DIRECTORY       /  etl_synpuf_last_table_ids.txt
 #
 #     SynPuf Beneficiary Files with year prefix
-#           BASE_SYNPUF_INPUT_DIRECTORY 
-#                                /  DE1_<sample_number> / 
+#           BASE_SYNPUF_INPUT_DIRECTORY
+#                                /  DE1_<sample_number> /
 #                                /  DE1_0_comb_Beneficiary_Summary_File_Sample_<sample_number>.csv
 #
 #     OMOP CDM v5 Tables
@@ -61,7 +61,7 @@ from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, Carri
 MAX_RECS                        = 100
 
 # -----------------------------------
-# - Configuration 
+# - Configuration
 # -----------------------------------
 # ---------------------------------
 BASE_SYNPUF_INPUT_DIRECTORY     = '/Data/OHDSI/CMS_SynPuf'
@@ -135,7 +135,7 @@ def get_timestamp():
 # -----------------------------------
 def log_stats(msg):
     print msg
-    global current_stats_filename 
+    global current_stats_filename
     with open(current_stats_filename,'a') as fout:
         fout.write('[{0}]{1}\n'.format(get_timestamp(),msg))
 
@@ -470,13 +470,13 @@ def check_beneficiary_table(sample_number):
         log_stats('[' + k + ']  ' + str(missing_years[k]))
 
 # -----------------------------------
-# CDM v5 Person 
+# CDM v5 Person
 # -----------------------------------
 def write_person_record(beneficiary):
     person_fd = file_control.get_Descriptor('person')
     yd = beneficiary.LatestYearData()
     if yd is None: return
-    
+
     person_fd.write('{0},'.format(beneficiary.person_id))                                   # person_id
 
     if int(yd.BENE_SEX_IDENT_CD) == 1:                                                      # gender_concept_id
@@ -594,7 +594,7 @@ def write_drug_records(beneficiary):
         drug_exp_fd.write('\n')
         drug_exp_fd.increment_recs_written(1)
         table_ids.last_drug_exposure_id += 1
-        
+
         #----------------------
         # drug cost
         #----------------------
@@ -1161,14 +1161,14 @@ def process_carrier_records(beneficiary):
                 proc_cost_fd.write('{0},'.format(cc_line.LINE_BENE_PTB_DDCTBL_AMT))                             # paid_toward_deductible
                 proc_cost_fd.write('{0},'.format(cc_line.LINE_NCH_PMT_AMT))                                     # paid_by_payer
                 proc_cost_fd.write('{0},'.format(cc_line.LINE_BENE_PRMRY_PYR_PD_AMT))                           # paid_by_coordination_benefits
-        
+
                 amt = 0
                 try:
                     amt = float(cc_line.LINE_BENE_PTB_DDCTBL_AMT) + float(cc_line.LINE_COINSRNC_AMT)
                 except:
                     pass
                 proc_cost_fd.write('{0:2},'.format(amt))                                            # total_out_of_pocket
-        
+
                 proc_cost_fd.write('{0},'.format(cc_line.LINE_ALOWD_CHRG_AMT))                                 # total_paid
                 proc_cost_fd.write('0,')                                                          # revenue_code_concept_id
                 ##
