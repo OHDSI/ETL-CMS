@@ -80,6 +80,9 @@ BASE_OMOP_INPUT_DIRECTORY       = os.environ['BASE_OMOP_INPUT_DIRECTORY']
 # Path to the directory where CDM-compatible CSV files should be saved
 BASE_OUTPUT_DIRECTORY           = os.environ['BASE_OUTPUT_DIRECTORY']
 
+# SynPUF dir format.  I've seen DE1_{0} and DE_{0} as different prefixes for the name of the directory containing a slice of SynPUF data
+SYNPUF_DIR_FORMAT               = os.environ['SYNPUF_DIR_FORMAT']
+
 DESTINATION_FILE_DRUG               = 'drug'
 DESTINATION_FILE_CONDITION          = 'condition'
 DESTINATION_FILE_PROCEDURE          = 'procedure'
@@ -346,7 +349,7 @@ def combine_beneficiary_files(sample_directory, output_directory, sample_number)
     log_stats('combine_beneficiary_files starting: sample_number=' + str(sample_number))
 
     output_bene_filename = os.path.join(output_directory ,
-                        'DE1_{0}'.format(sample_number),
+                        SYNPUF_DIR_FORMAT.format(sample_number),
                         'DE1_0_comb_Beneficiary_Summary_File_Sample_{0}.csv'.format(sample_number))
 
     #if os.path.exists(output_bene_filename):
@@ -360,7 +363,7 @@ def combine_beneficiary_files(sample_directory, output_directory, sample_number)
     with open(output_bene_filename, 'w') as f_out:
         for year in ['2008','2009','2010']:
             input_bene_filename = os.path.join(sample_directory,
-                            'DE1_{0}'.format(sample_number),
+                            SYNPUF_DIR_FORMAT.format(sample_number),
                             'DE1_0_{0}_Beneficiary_Summary_File_Sample_{1}.csv'.format(year,sample_number))
             log_stats('Reading    ->' + input_bene_filename)
             recs_in=0
@@ -418,8 +421,8 @@ def check_beneficiary_table(sample_number):
 
     missing_years = {}
     log_stats('check_beneficiary_table starting')
-    filename_log = os.path.join(BASE_OUTPUT_DIRECTORY,'DE1_{0}'.format(sample_number),'{0}_beneficiary_log.txt'.format(sample_number))
-    filename_log_2 = os.path.join(BASE_OUTPUT_DIRECTORY,'DE1_{0}'.format(sample_number),'{0}_beneficiary_log_2.txt'.format(sample_number))
+    filename_log = os.path.join(BASE_OUTPUT_DIRECTORY,SYNPUF_DIR_FORMAT.format(sample_number),'{0}_beneficiary_log.txt'.format(sample_number))
+    filename_log_2 = os.path.join(BASE_OUTPUT_DIRECTORY,SYNPUF_DIR_FORMAT.format(sample_number),'{0}_beneficiary_log_2.txt'.format(sample_number))
     with open(filename_log, 'w') as f_out, open(filename_log_2, 'w') as f_out_2:
         for DESYNPUF_ID in beneficiary_dict:
             ben = beneficiary_dict[DESYNPUF_ID]
@@ -1360,7 +1363,7 @@ if __name__ == '__main__':
     build_maps()
 
     # Build the object to manage access to all the files
-    file_control = FileControl(BASE_SYNPUF_INPUT_DIRECTORY, BASE_OUTPUT_DIRECTORY, args.sample_number)
+    file_control = FileControl(BASE_SYNPUF_INPUT_DIRECTORY, BASE_OUTPUT_DIRECTORY, SYNPUF_DIR_FORMAT, args.sample_number)
     file_control.delete_all_output()
 
     load_beneficiary_table(args.sample_number)

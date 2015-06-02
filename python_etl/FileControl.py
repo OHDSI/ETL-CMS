@@ -95,11 +95,11 @@ class FileDescriptor(object):
 
 
 class FileControl(object):
-    def __init__(self, BASE_SYNPUF_INPUT_DIRECTORY, BASE_OUTPUT_DIRECTORY, sample_number, verify_exists = True):
-        self.base_directory = BASE_SYNPUF_INPUT_DIRECTORY
-        self.base_output_directory = BASE_OUTPUT_DIRECTORY
+    def __init__(self, base_synpuf_input_directory, base_output_directory, synpuf_dir_format, sample_number, verify_exists = True):
+        self.base_directory = base_synpuf_input_directory
+        self.base_output_directory = base_output_directory
 
-        input_directory = os.path.join(BASE_SYNPUF_INPUT_DIRECTORY, "DE1_" + str(sample_number))
+        input_directory = os.path.join(base_synpuf_input_directory, synpuf_dir_format.format(sample_number))
 
         self.files = {}
 
