@@ -3,9 +3,11 @@ import os, os.path
 class FileDescriptor(object):
     def __init__(self, token, mode, directory_name, filename, verify_exists = True):
         self.filename = filename
+        self.directory_name = directory_name
         self.complete_pathname = os.path.join(directory_name, filename)
         self.token = token
         self.mode = mode
+        self.verify_exists = verify_exists
         self.fd = None
         self._records_read = 0
         self._records_written = 0
@@ -93,6 +95,17 @@ class FileDescriptor(object):
     def records_written(self):
         return self._records_written
 
+    def sorted(self):
+        sorted_path = self.complete_pathname + '.srt'
+        if not (os.path.exists(sorted_path) and os.path.getsize(sorted_path) > 0):
+            print("Sorting {0}".format(self.complete_pathname))
+            with open(sorted_path, 'w') as sorted_file:
+                with open(self.complete_pathname) as source:
+                    contents = sorted(source.readlines())
+                    sorted_file.writelines(contents)
+                    sorted_file.flush()
+        return FileDescriptor(self.token, self.mode, self.directory_name, self.filename + '.srt', self.verify_exists)
+
 
 class FileControl(object):
     def __init__(self, base_synpuf_input_directory, base_output_directory, synpuf_dir_format, sample_number, verify_exists = True):
@@ -105,17 +118,17 @@ class FileControl(object):
 
         #-- input files
         self.files['beneficiary'] = FileDescriptor('beneficiary', 'read', input_directory,
-                                                "DE1_0_comb_Beneficiary_Summary_File_Sample_" + str(sample_number) + ".csv.srt")
+                                                "DE1_0_comb_Beneficiary_Summary_File_Sample_" + str(sample_number) + ".csv").sorted()
         self.files['inpatient'] = FileDescriptor('inpatient', 'read', input_directory,
-                                                "DE1_0_2008_to_2010_Inpatient_Claims_Sample_" + str(sample_number) + ".csv.srt")
+                                                "DE1_0_2008_to_2010_Inpatient_Claims_Sample_" + str(sample_number) + ".csv").sorted()
         self.files['outpatient'] = FileDescriptor('outpatient', 'read', input_directory,
-                                                "DE1_0_2008_to_2010_Outpatient_Claims_Sample_" + str(sample_number) + ".csv.srt")
+                                                "DE1_0_2008_to_2010_Outpatient_Claims_Sample_" + str(sample_number) + ".csv").sorted()
         self.files['carrier_A'] = FileDescriptor('carrier_A', 'read', input_directory,
-                                                "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(sample_number) + "A.csv.srt")
+                                                "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(sample_number) + "A.csv").sorted()
         self.files['carrier_B'] = FileDescriptor('carrier_B', 'read', input_directory,
-                                                "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(sample_number) + "B.csv.srt")
+                                                "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(sample_number) + "B.csv").sorted()
         self.files['prescription'] = FileDescriptor('prescription', 'read', input_directory,
-                                                "DE1_0_2008_to_2010_Prescription_Drug_Events_Sample_" + str(sample_number) + ".csv.srt")
+                                                "DE1_0_2008_to_2010_Prescription_Drug_Events_Sample_" + str(sample_number) + ".csv").sorted()
 
         # output files
         output_files = [
