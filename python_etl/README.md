@@ -3,6 +3,9 @@ This is an implementation of the SynPUF ETL specification designed to generate a
 
 This implementation is under active development and is not at all ready to be used by the general public.  We’re open-sourcing this code now because several people have expressed interest in assisting in the development of this ETL implementation and we’ll be using this repository as a means to coordinate the efforts of those individuals.
 
+### Downloading SynPUF Files
+There is a helpful script in the ``../scripts`` directory that will download SynPUF files and prepare them for ETL for you automatically.
+
 
 ### Required Software/Hardware
 - [Python 2.7.x](https://www.python.org/) + [pip](https://pip.pypa.io/en/stable/)
@@ -11,7 +14,7 @@ This implementation is under active development and is not at all ready to be us
 
 
 ### Running the ETL
-- [Download the SynPUF Files](#downloading-synpuf-files))
+- [Download the SynPUF Files](#downloading-synpuf-files)
 - ``pip install -r requirements.txt``
 - Copy either the .env.example.windows or .env.example.unix to .env and edit to reflect your own paths
 - ``python CMS_SynPUF_ETL_CDM_v5.py <sample number>``
