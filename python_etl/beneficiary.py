@@ -2,7 +2,7 @@ from constants import BENEFICIARY_SUMMARY_RECORD
 import calendar
 # from FileControl import FileControl, FileDescriptor
 from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, CarrierClaimLine, CarrierClaim
-from constants import PRESCRIPTION_DRUG_RECORD, INPATIENT_CLAIMS_RECORD, OUTPATIENT_CLAIMS_RECORD, CARRIER_CLAIMS_RECORD
+from constants import PRESCRIPTION_DRUG_RECORD, INPATIENT_CLAIMS_RECORD, OUTPATIENT_CLAIMS_RECORD, CARRIER_CLAIMS_RECORD, SYNPUF_FILE_TOKENS
 
 # -----------------------------------
 # This class stores the beneficiary data for all years for one person
@@ -52,6 +52,8 @@ class Beneficiary(object):
         self.DESYNPUF_ID  = DESYNPUF_ID
         self.person_id = person_id
 
+        self.visit_dates = {}
+
         ## slots for person records from all files
         self._carrier_records = []
         self._inpatient_records = []
@@ -64,6 +66,14 @@ class Beneficiary(object):
         self._prescription_records_date_order_list = []
 
         self._record_counts = {}
+
+    def get_visit_id(self, event_date):
+        if event_date in self.visit_dates:
+            return self.visit_dates[event_date]
+        return -1
+        # if len(self.visit_dates) > 0:
+        #     return self.visit_dates.values()[0]
+        # raise
 
     @property
     def record_counts(self):
@@ -174,11 +184,10 @@ class Beneficiary(object):
     def LoadClaimData(self, file_control):
 
         data_file_list = [
-                    (self._carrier_records,       'carrier_A'),
-                    (self._carrier_records,       'carrier_B'),
-                    (self._inpatient_records,     'inpatient'),
-                    (self._outpatient_records,    'outpatient'),
-                    (self._prescription_records,  'prescription'),
+                    (self._carrier_records,       SYNPUF_FILE_TOKENS.CARRIER),
+                    (self._inpatient_records,     SYNPUF_FILE_TOKENS.INPATIENT),
+                    (self._outpatient_records,    SYNPUF_FILE_TOKENS.OUTPATIENT),
+                    (self._prescription_records,  SYNPUF_FILE_TOKENS.PRESCRIPTION)
                     ]
 
         for record_list, file_token in data_file_list:
