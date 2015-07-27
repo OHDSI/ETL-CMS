@@ -10,6 +10,10 @@ class PrescriptionDrug(object):
         self.fields = record
 
     @property
+    def DESYNPUF_ID(self):
+        return self.fields[PRESCRIPTION_DRUG_RECORD.DESYNPUF_ID]
+
+    @property
     def PDE_ID(self):
         return self.fields[PRESCRIPTION_DRUG_RECORD.PDE_ID]
 
@@ -42,6 +46,10 @@ class PrescriptionDrug(object):
 class InpatientClaim(object):
     def __init__(self, record):
         self.fields = record
+
+    @property
+    def DESYNPUF_ID(self):
+        return self.fields[INPATIENT_CLAIMS_RECORD.DESYNPUF_ID]
 
     @property
     def CLM_ID(self):
@@ -151,6 +159,10 @@ class OutpatientClaim(object):
         self.fields = record
 
     @property
+    def DESYNPUF_ID(self):
+        return self.fields[OUTPATIENT_CLAIMS_RECORD.DESYNPUF_ID]
+
+    @property
     def CLM_ID(self):
         return self.fields[OUTPATIENT_CLAIMS_RECORD.CLM_ID]
 
@@ -258,6 +270,9 @@ class CarrierClaim(object):
     def __init__(self, record):
         self.fields = record
 
+    @property
+    def DESYNPUF_ID(self):
+        return self.fields[CARRIER_CLAIMS_RECORD.DESYNPUF_ID]
 
     @property
     def CLM_ID(self):

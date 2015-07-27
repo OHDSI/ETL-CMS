@@ -33,6 +33,10 @@ class OMOP_CONSTANTS(object):
     DEATH_TYPE_PAYER_ENR_STATUS         = "38003565"
     DEATH_TYPE_CONDITION                = "38003567"
 
+    DEVICE_INFERRED_PROCEDURE_CLAIM     = "44818705"
+    MEASUREMENT_DERIVED_VALUE           = "45754907"
+    OBSERVATION_CHIEF_COMPLAINT         = "38000282"
+
     ICD_9_DIAGNOSIS_VOCAB_ID            = 'ICD9CM'
     ICD_9_PROCEDURES_VOCAB_ID           = 'ICD9Proc'
     HCPCS_VOCABULARY_ID                 = 'HCPCS'
@@ -74,6 +78,33 @@ class OMOP_CONCEPT_RECORD(object):
     INVALID_REASON      = 9
 
     fieldCount = INVALID_REASON + 1
+
+
+# --------------------
+# Record layout for OMOP ETL Mapping Xref
+# --------------------
+class OMOP_MAPPING_RECORD(object):
+    SOURCE_CONCEPT_CODE       = 0
+    SOURCE_CONCEPT_ID         = 1
+    SOURCE_VOCABULARY_ID      = 3
+    SOURCE_CONCEPT_NAME       = 4
+    TARGET_CONCEPT_ID         = 5
+    TARGET_DOMAIN_ID          = 6
+    TARGET_VOCABULARY_ID      = 7
+    TARGET_CONCEPT_NAME       = 8
+
+    fieldCount = TARGET_CONCEPT_NAME + 1
+
+
+# --------------------
+#  SynPuf file tokens
+# --------------------
+class SYNPUF_FILE_TOKENS(object):
+    BENEFICARY       = 'beneficiary'
+    CARRIER          = 'carrier'
+    INPATIENT        = 'inpatient'
+    OUTPATIENT       = 'outpatient'
+    PRESCRIPTION     = 'prescription'
 
 # --------------------
 # Record layouts for CMS SynPuf files
