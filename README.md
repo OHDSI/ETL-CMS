@@ -4,6 +4,10 @@ Workproducts to ETL CMS datasets into OMOP Common Data Model
 ## What's in Here?
 
 
+### RabbitInAHat
+The WhiteRabbit/RabbitInAHat files used to develop the ETL specification, along with the ETL specification in DOCX format.
+
+
 ### scripts
 The scripts folder holds handy scripts for munging some of the raw data used in the ETLs we're developing.
 
