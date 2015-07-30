@@ -1,0 +1,7 @@
+care_site_id,care_site_name,place_of_service_concept_id,location_id,care_site_source_value,place_of_service_source_value
+1,null,8756,null,1513WQ,Outpatient Facility
+2,null,8756,null,0502NA,Outpatient Facility
+3,null,8717,null,1513QQ,Inpatient Facility
+4,null,8717,null,0506GC,Inpatient Facility
+5,null,8940,null,953768367,null
+6,null,8940,null,275404078,null

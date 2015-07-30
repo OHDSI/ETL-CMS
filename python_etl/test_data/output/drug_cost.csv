@@ -1,0 +1,3 @@
+drug_cost_id,drug_exposure_id,currency_concept_id,paid_copay,paid_coinsurance,paid_toward_deductible,paid_by_payer,paid_by_coordination_benefits,total_out_of_pocket,total_paid,ingredient_cost,dispensing_fee,average_wholesale_price,payer_plan_period_id
+1,1,44818668,null,10,null,null,null,10,270,null,null,null,3
+2,2,44818668,null,20,null,null,null,20,10,null,null,null,7
