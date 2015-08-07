@@ -17,7 +17,7 @@ def csvify(excel_file, dest, names)
   names.each.with_index do |sheet_name, index|
     csv_name = sheet_name + '.csv'
     puts "Making #{csv_name}"
-    system(%{xlsx2csv --ignoreempty --sheet #{index + 1} #{excel_file} #{csv_dir + csv_name}})
+    system(%{xlsx2csv --dateformat '%Y-%m-%d' --ignoreempty --sheet #{index + 1} #{excel_file} #{csv_dir + csv_name}})
   end
 end
 
