@@ -1,7 +1,7 @@
 provider_id,provider_name,npi,dea,specialty_concept_id,care_site_id,year_of_birth,gender_concept_id,provider_source_value,specialty_source_value,specialty_source_concept_id,gender_source_value,gender_source_concept_id
-1,null,8914837640,null,0,5,null,0,953768367,null,0,null,0
-2,null,6513947302,null,0,6,null,0,275404078,null,0,null,0
-3,null,2462820318,null,0,1,null,0,null,null,0,null,0
-4,null,2484358033,null,0,2,null,0,null,null,0,null,0
-5,null,1381846290,null,0,3,null,0,null,null,0,null,0
-6,null,426619309,null,0,4,null,0,null,null,0,null,0
+1,,8914837640,,0,5,,0,953768367,,0,,0
+2,,6513947302,,0,6,,0,275404078,,0,,0
+3,,2462820318,,0,1,,0,,,0,,0
+4,,2484358033,,0,2,,0,,,0,,0
+5,,1381846290,,0,3,,0,,,0,,0
+6,,426619309,,0,4,,0,,,0,,0

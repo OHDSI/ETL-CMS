@@ -34,6 +34,7 @@ csvify('Input_Test_Files.xlsx', 'input', input_names)
 output_names = %w(
   location
   person
+  observation_period
   care_site
   visit_occurrence
   provider
@@ -44,6 +45,8 @@ output_names = %w(
   procedure_occurrence
   measurement
   observation
+  note
+  specimen
   fact_relationship
   procedure_cost
   visit_cost

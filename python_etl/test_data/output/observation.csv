@@ -1,6 +1,6 @@
 observation_id,person_id,observation_concept_id,observation_date,observation_time,observation_type_concept_id,value_as_number,value_as_string,value_as_concept_id,qualifier_concept_id,unit_concept_id,provider_id,visit_occurrence_id,observation_source_value,observation_source_concept_id,unit_source_value,qualifier_source_value
-1,0004D03F1BD5E607,436962,20080828,null,38000282,null,null,0,0,0,2,2,78052,44829292,null,null
-2,0004D03F1BD5E607,4015724,20080828,null,38000282,null,null,0,0,0,2,2,V0481,44837741,null,null
-3,0002056B40CEE450,4214956,20080404,null,38000282,null,null,0,0,0,3,3,V1588,44834234,null,null
-4,0004D03F1BD5E607,4015724,20100807,null,38000282,null,null,0,0,0,6,6,V065,44828481,null,null
-5,0004D03F1BD5E607,436583,20100807,null,38000282,null,null,0,0,0,6,6,E8889,44835351,null,null
+1,0004D03F1BD5E607,436962,39688,,38000282,,,0,0,0,2,2,78052,44829292,,
+2,0004D03F1BD5E607,4015724,39688,,38000282,,,0,0,0,2,2,V0481,44837741,,
+3,0002056B40CEE450,4214956,39542,,38000282,,,0,0,0,3,3,V1588,44834234,,
+4,0004D03F1BD5E607,4015724,40397,,38000282,,,0,0,0,6,6,V065,44828481,,
+5,0004D03F1BD5E607,436583,40397,,38000282,,,0,0,0,6,6,E8889,44835351,,
