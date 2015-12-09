@@ -3,11 +3,28 @@ from time import strftime
 import argparse
 import dotenv
 import math
-from constants import OMOP_CONSTANTS, OMOP_MAPPING_RECORD, BENEFICIARY_SUMMARY_RECORD
+from constants import OMOP_CONSTANTS, OMOP_MAPPING_RECORD, BENEFICIARY_SUMMARY_RECORD, OMOP_CONCEPT_RECORD, OMOP_CONCEPT_RELATIONSHIP_RECORD
 from utility_classes import Table_ID_Values
 from beneficiary import Beneficiary
 from FileControl import FileControl
 from SynPufFiles import PrescriptionDrug, InpatientClaim, OutpatientClaim, CarrierClaim
+
+def icd9fix(s):
+    if(len(s) == 0):
+        return('')
+    if(s[0]=='V'):
+        if(len(s) == 3):
+            return(s)
+        return(s[0:3] + "." + s[3:])
+    if(s[0]=='E'):
+        if(len(s) == 4):
+            return(s)
+        return(s[0:4] + "." + s[4:])
+    if(len(s) == 3):
+        return(s)
+    if(len(s) >= 4):
+        return(s[0:3] + "." + s[3:])
+    return('')
 
 # ------------------------
 # TODO: finish enough for backend testing
@@ -118,6 +135,7 @@ cdm_counts_dict = {}
 
 vocabulary_id_list = {}
 source_code_concept_dict = {}
+concept_relationship_dict = {}
 current_stats_filename = ''
 
 icd9_codes_death = ['7616', '798', '7980', '7981', '7982','7989', 'E9131', 'E978']
@@ -236,123 +254,216 @@ def build_maps():
     else:
         log_stats('No existing npi_provider_id_file found (looked for ->' + npi_provider_id_file + ')')
 
-    # #----------------
-    # # Load the OMOP v5 Concept file to build the source code to conceptID xref.
-    # # NOTE: This version of the flat file had embedded newlines. This code handles merging the split
-    # #       records. This may not be needed when the final OMOP v5 Concept file is produced.
-    # #----------------
-    # omop_concept_debug_file = os.path.join(BASE_OUTPUT_DIRECTORY,'concept_debug_log.txt')
-    #
-    # omop_concept_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'CONCEPT.csv')
-    #
-    # # use the mini version with the concepts we want pre-selected
+    #----------------
+    # Load the OMOP v5 Concept file to build the source code to conceptID xref.
+    # NOTE: This version of the flat file had embedded newlines. This code handles merging the split
+    #       records. This may not be needed when the final OMOP v5 Concept file is produced.
+    #----------------
+    omop_concept_relationship_debug_file = os.path.join(BASE_OUTPUT_DIRECTORY,'concept_relationship_debug_log.txt')
+    omop_concept_relationship_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'CONCEPT_RELATIONSHIP.csv')
+
+
+    omop_concept_debug_file = os.path.join(BASE_OUTPUT_DIRECTORY,'concept_debug_log.txt')
+    omop_concept_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'CONCEPT.csv')
+
+    #The HCPCS vocabulary is a combination of HCPCS codes from CONCEPTS.csv and CPT4 codes from the following file
+    omop_concept_cpt4_debug_file = os.path.join(BASE_OUTPUT_DIRECTORY,'concept_debug_cpt4_log.txt')
+    omop_concept_cpt4_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'concept_cpt4.csv')
+    
+    # use the mini version with the concepts we want pre-selected
     # omop_concept_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'CONCEPT_mini.csv')
-    #
-    # # omop_concept_file_mini = os.path.join(BASE_OUTPUT_DIRECTORY,'CONCEPT_mini.csv')
-    #
-    # log_stats('Reading omop_concept_file        -> ' + omop_concept_file)
-    # log_stats('Writing to log file              -> ' + omop_concept_debug_file)
-    #
-    # global vocabulary_id_list
-    # recs_in = 0
-    # recs_skipped = 0
-    # merged_recs=0
-    # recs_checked=0
-    # recs_written_to_mini=0
-    #
-    # with open(omop_concept_file,'r') as fin, \
-    #      open(omop_concept_debug_file, 'w') as fout_log:
-    #      # open(omop_concept_file_mini, 'w') as fout_mini:
-    #     for rec in fin:
-    #         recs_in += 1
-    #         # if recs_in > 5000:break
-    #         if recs_in % 100000 == 0: print 'omop concept recs=',recs_in
-    #         flds = (rec[:-1]).split('\t')
-    #
-    #         if len(flds) == OMOP_CONCEPT_RECORD.fieldCount:
-    #             concept_id = flds[OMOP_CONCEPT_RECORD.CONCEPT_ID]
-    #             concept_code = original_concept_code = flds[OMOP_CONCEPT_RECORD.CONCEPT_CODE]
-    #             #concept_name  = flds[OMOP_CONCEPT_RECORD.CONCEPT_NAME]
-    #             vocabulary_id = flds[OMOP_CONCEPT_RECORD.VOCABULARY_ID]
-    #             domain_id = flds[OMOP_CONCEPT_RECORD.DOMAIN_ID]
-    #             invalid_reason = flds[OMOP_CONCEPT_RECORD.INVALID_REASON]
-    #
-    #             status = ''
-    #             if concept_id != '':
-    #                 if vocabulary_id in [OMOP_CONSTANTS.ICD_9_DIAGNOSIS_VOCAB_ID,
-    #                                      OMOP_CONSTANTS.ICD_9_PROCEDURES_VOCAB_ID,
-    #                                      OMOP_CONSTANTS.CPT4_VOCABULARY_ID,
-    #                                      OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,
-    #                                      OMOP_CONSTANTS.NDC_VOCABULARY_ID]:
-    #                     recs_checked += 1
-    #                     if invalid_reason == '':
-    #                         if vocabulary_id not in vocabulary_id_list: vocabulary_id_list[vocabulary_id] =0
-    #                         vocabulary_id_list[vocabulary_id] += 1
-    #                         # fout_mini.write(rec)
-    #                         # recs_written_to_mini += 1
-    #                         if vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID:
-    #                             destination_file = DESTINATION_FILE_DRUG
-    #                         elif domain_id in domain_destination_file_list:
-    #                             destination_file = domain_destination_file_list[domain_id]
-    #                             # store the dotless form
-    #                             if vocabulary_id in [OMOP_CONSTANTS.ICD_9_DIAGNOSIS_VOCAB_ID, OMOP_CONSTANTS.ICD_9_PROCEDURES_VOCAB_ID]:
-    #                                 concept_code = concept_code.replace('.','')
-    #                         if concept_code not in source_code_concept_dict:
-    #                             source_code_concept_dict[concept_code] = SourceCodeConcept(concept_code, original_concept_code, concept_id, destination_file)
-    #                     else:
-    #                         recs_skipped += 1
-    #                         status = 'invalid_reason not blank'
-    #             if status != '':
-    #                 fout_log.write(status + ': \t')
-    #                 # for fld in line: fout_log.write(fld + '\t')
-    #                 fout_log.write(rec + '\n')
-    #
-    #     log_stats('Done, omop concept recs_in            = ' + str(recs_in))
-    #     log_stats('recs_checked                          = ' + str(recs_checked))
-    #     log_stats('recs_skipped                          = ' + str(recs_skipped))
-    #     log_stats('merged_recs                           = ' + str(merged_recs))
-    #     log_stats('recs_written_to_mini                  = ' + str(recs_written_to_mini))
-    #     log_stats('len source_code_concept_dict           = ' + str(len(source_code_concept_dict)))
-    # ---------------------------
+    
+    # omop_concept_file_mini = os.path.join(BASE_OUTPUT_DIRECTORY,'CONCEPT_mini.csv')
+    
+
+    global vocabulary_id_list
+
+
+    recs_in = 0
+    recs_skipped = 0
+
+    log_stats('Reading omop_concept_relationship_file   -> ' + omop_concept_relationship_file)
+    log_stats('Writing to log file              -> ' + omop_concept_relationship_debug_file)
+
+    with open(omop_concept_relationship_file,'r') as fin, \
+         open(omop_concept_relationship_debug_file, 'w') as fout_log:
+        for rec in fin:
+            recs_in += 1
+            if recs_in % 100000 == 0: print 'omop concept relationship recs=',recs_in
+            flds = (rec[:-1]).split('\t')
+            if len(flds) == OMOP_CONCEPT_RELATIONSHIP_RECORD.fieldCount:
+                concept_id1 = flds[OMOP_CONCEPT_RELATIONSHIP_RECORD.CONCEPT_ID_1]
+                concept_id2 = flds[OMOP_CONCEPT_RELATIONSHIP_RECORD.CONCEPT_ID_2]
+                relationship_id = flds[OMOP_CONCEPT_RELATIONSHIP_RECORD.RELATIONSHIP_ID]
+                invalid_reason = flds[OMOP_CONCEPT_RELATIONSHIP_RECORD.INVALID_REASON]
+    
+                if concept_id1 != '' and concept_id2 != '' and relationship_id == "Maps to": # and invalid_reason == '':
+                    concept_relationship_dict[concept_id1] = concept_id2
+                else:
+                    recs_skipped = recs_skipped + 1
+
+        log_stats('Done, omop concept recs_in            = ' + str(recs_in))
+        log_stats('recs_skipped                          = ' + str(recs_skipped))
+        log_stats('len source_code_concept_dict           = ' + str(len(source_code_concept_dict)))
+
+
+    recs_in = 0
+    recs_skipped = 0
+    merged_recs=0
+    recs_checked=0
+
+    log_stats('Reading omop_concept_cpt4_file   -> ' + omop_concept_file)
+    log_stats('Writing to log file              -> ' + omop_concept_cpt4_debug_file)
+    #TODO: there is an overlap of 41 2-character codes that are the same between CPT4 and HCPCS,
+    #but map to different OMOP concepts. Need to determine which should prevail. Whichever prevails should call one of the next 2 code blocks first.
+
+    #Read the CPT4 codes which are kept in a separate file, and add them to the HCPCS vocabulary
+    with open(omop_concept_cpt4_file,'r') as fin, \
+         open(omop_concept_cpt4_debug_file, 'w') as fout_log:
+        for rec in fin:
+            recs_in += 1
+            if recs_in % 100000 == 0: print 'omop concept cpt4 recs=',recs_in
+            flds = (rec[:-1]).split('\t')
+            if len(flds) == OMOP_CONCEPT_RECORD.fieldCount:
+                concept_id = flds[OMOP_CONCEPT_RECORD.CONCEPT_ID]
+                concept_code = original_concept_code = flds[OMOP_CONCEPT_RECORD.CONCEPT_CODE]
+                #concept_name  = flds[OMOP_CONCEPT_RECORD.CONCEPT_NAME]
+                vocabulary_id = flds[OMOP_CONCEPT_RECORD.VOCABULARY_ID]
+                domain_id = flds[OMOP_CONCEPT_RECORD.DOMAIN_ID]
+                invalid_reason = flds[OMOP_CONCEPT_RECORD.INVALID_REASON]
+    
+                status = ''
+                if concept_id != '':
+                    if vocabulary_id in [OMOP_CONSTANTS.CPT4_VOCABULARY_ID]:
+                        vocabulary_id = OMOP_CONSTANTS.HCPCS_VOCABULARY_ID
+                        recs_checked += 1
+                        if  not concept_relationship_dict.has_key(concept_id):
+                            status = "No self-map from OMOP (CPT4) to OMOP (CPT4) [adding] for " + str(concept_id)
+                            concept_relationship_dict[concept_id] = concept_id
+                        elif len(concept_code) == 5:
+                            if vocabulary_id not in vocabulary_id_list: vocabulary_id_list[vocabulary_id] =0
+                            vocabulary_id_list[vocabulary_id] += 1
+                            if domain_id in domain_destination_file_list:
+                                destination_file = domain_destination_file_list[domain_id]
+                            if (vocabulary_id, concept_code) not in source_code_concept_dict:
+                                source_code_concept_dict[vocabulary_id,concept_code] = SourceCodeConcept(concept_code, original_concept_code, concept_relationship_dict[concept_id], destination_file)
+                        else:
+                            recs_skipped += 1
+                            status = 'CPT4 concept code not 5 digits'
+                if status != '':
+                    fout_log.write(status + ': \t')
+                    # for fld in line: fout_log.write(fld + '\t')
+                    fout_log.write(rec + '\n')
+
+        log_stats('Done, omop concept recs_in            = ' + str(recs_in))
+        log_stats('recs_checked                          = ' + str(recs_checked))
+        log_stats('recs_skipped                          = ' + str(recs_skipped))
+        log_stats('merged_recs                           = ' + str(merged_recs))
+        log_stats('len source_code_concept_dict           = ' + str(len(source_code_concept_dict)))
+
+
+    log_stats('Reading omop_concept_file        -> ' + omop_concept_file)
+    log_stats('Writing to log file              -> ' + omop_concept_debug_file)
+        
+    with open(omop_concept_file,'r') as fin, \
+         open(omop_concept_debug_file, 'w') as fout_log:
+         # open(omop_concept_file_mini, 'w') as fout_mini:
+        for rec in fin:
+            recs_in += 1
+            # if recs_in > 5000:break
+            if recs_in % 100000 == 0: print 'omop concept recs=',recs_in
+            flds = (rec[:-1]).split('\t')
+    
+            if len(flds) == OMOP_CONCEPT_RECORD.fieldCount:
+                concept_id = flds[OMOP_CONCEPT_RECORD.CONCEPT_ID]
+                concept_code = original_concept_code = flds[OMOP_CONCEPT_RECORD.CONCEPT_CODE]
+                #concept_name  = flds[OMOP_CONCEPT_RECORD.CONCEPT_NAME]
+                vocabulary_id = flds[OMOP_CONCEPT_RECORD.VOCABULARY_ID]
+                if(vocabulary_id in [OMOP_CONSTANTS.ICD_9_DIAGNOSIS_VOCAB_ID,OMOP_CONSTANTS.ICD_9_PROCEDURES_VOCAB_ID]):
+                    vocabulary_id = OMOP_CONSTANTS.ICD_9_VOCAB_ID
+                   
+                domain_id = flds[OMOP_CONCEPT_RECORD.DOMAIN_ID]
+                invalid_reason = flds[OMOP_CONCEPT_RECORD.INVALID_REASON]
+    
+                status = ''
+                if concept_id != '':
+                    if vocabulary_id in [OMOP_CONSTANTS.ICD_9_VOCAB_ID,
+                                         OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,
+                                         OMOP_CONSTANTS.NDC_VOCABULARY_ID]:
+                        recs_checked += 1
+                        if  not concept_relationship_dict.has_key(concept_id):
+                            recs_skipped += 1
+                            if( vocabulary_id == OMOP_CONSTANTS.ICD_9_VOCAB_ID):
+                                status = "No map from OMOP (ICD9) to OMOP (SNOMED) for " + str(concept_id)
+                            if( vocabulary_id == OMOP_CONSTANTS.HCPCS_VOCABULARY_ID):
+                                status = "No map from OMOP (HCPCS) to OMOP (???) for " + str(concept_id)
+                            if( vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID):
+                                status = "No map from OMOP (NCD) to OMOP (RxNorm) for " + str(concept_id)
+                        #elif invalid_reason != '':
+                        #    recs_skipped += 1
+                        #    status = 'invalid_reason not blank'
+                        else:
+                            if vocabulary_id not in vocabulary_id_list: vocabulary_id_list[vocabulary_id] = 0
+                            vocabulary_id_list[vocabulary_id] += 1
+                            # fout_mini.write(rec)
+                            if vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID:
+                                destination_file = DESTINATION_FILE_DRUG
+                            elif domain_id in domain_destination_file_list:
+                                destination_file = domain_destination_file_list[domain_id]
+                            if (vocabulary_id, concept_code) not in source_code_concept_dict:
+                                source_code_concept_dict[vocabulary_id,concept_code] = SourceCodeConcept(concept_code, original_concept_code, concept_relationship_dict[concept_id], destination_file)
+                if status != '':
+                    fout_log.write(status + ': \t')
+                    # for fld in line: fout_log.write(fld + '\t')
+                    fout_log.write(rec + '\n')
+
+                    
+        log_stats('Done, omop concept recs_in            = ' + str(recs_in))
+        log_stats('recs_checked                          = ' + str(recs_checked))
+        log_stats('recs_skipped                          = ' + str(recs_skipped))
+        log_stats('merged_recs                           = ' + str(merged_recs))
+        log_stats('len source_code_concept_dict           = ' + str(len(source_code_concept_dict)))
+
+        #---------------------------
 
 
     #----------------
     # Load the mapping xref file built from OMOP Vocabulary:
     #----------------
-    omop_mapping_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'omop_vocab_xref_0723.txt')
-    log_stats('Reading omop_mapping_file        -> ' + omop_mapping_file)
+    # omop_mapping_file = os.path.join(BASE_OMOP_INPUT_DIRECTORY,'CONCEPT.csv')
+    # log_stats('Reading omop_mapping_file        -> ' + omop_mapping_file)
 
-    global vocabulary_id_list
-    recs_in = 0
+    # global vocabulary_id_list
+    # recs_in = 0
 
-    with open(omop_mapping_file,'rU') as fin:
-        for rec in fin:
-            recs_in += 1
-            if recs_in % 100000 == 0: print 'omop mapping recs=',recs_in
-            flds = (rec[:-1]).split(',')
-            destination_file = ''
-            if len(flds) == OMOP_MAPPING_RECORD.fieldCount:
-                source_concept_code = flds[OMOP_MAPPING_RECORD.SOURCE_CONCEPT_CODE]
-                source_concept_id = flds[OMOP_MAPPING_RECORD.SOURCE_CONCEPT_ID]
-                target_concept_id = flds[OMOP_MAPPING_RECORD.TARGET_CONCEPT_ID]
-                target_vocabulary_id = flds[OMOP_MAPPING_RECORD.TARGET_VOCABULARY_ID]
-                target_domain_id = flds[OMOP_MAPPING_RECORD.TARGET_DOMAIN_ID]
-                if target_vocabulary_id not in vocabulary_id_list: vocabulary_id_list[target_vocabulary_id] =0
-                vocabulary_id_list[target_vocabulary_id] += 1
-                if target_vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID:
-                    destination_file = DESTINATION_FILE_DRUG
-                elif target_domain_id in domain_destination_file_list:
-                    destination_file = domain_destination_file_list[target_domain_id]
-                if source_concept_code not in source_code_concept_dict:
-                    source_code_concept_dict[source_concept_code] = SourceCodeConcept(source_concept_code, source_concept_id, target_concept_id, destination_file)
+    # with open(omop_mapping_file,'rU') as fin:
+    #     for rec in fin:
+    #         recs_in += 1
+    #         if recs_in % 100000 == 0: print 'omop mapping recs=',recs_in
+    #         flds = (rec[:-1]).split('\t')
+    #         destination_file = ''
+    #         if len(flds) == OMOP_MAPPING_RECORD.fieldCount:
+    #             source_concept_code = flds[OMOP_MAPPING_RECORD.SOURCE_CONCEPT_CODE]    
+    #             source_concept_id = flds[OMOP_MAPPING_RECORD.SOURCE_CONCEPT_ID]        
+    #             target_concept_id = flds[OMOP_MAPPING_RECORD.TARGET_CONCEPT_ID]        
+    #             target_vocabulary_id = flds[OMOP_MAPPING_RECORD.TARGET_VOCABULARY_ID]  
+    #             target_domain_id = flds[OMOP_MAPPING_RECORD.TARGET_DOMAIN_ID]          
+    #             if target_vocabulary_id not in vocabulary_id_list: vocabulary_id_list[target_vocabulary_id] =0
+    #             vocabulary_id_list[target_vocabulary_id] += 1
+    #             if target_vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID:
+    #                 destination_file = DESTINATION_FILE_DRUG
+    #             elif target_domain_id in domain_destination_file_list:
+    #                 destination_file = domain_destination_file_list[target_domain_id]
+    #             if source_concept_code not in source_code_concept_dict:
+    #                 source_code_concept_dict[source_concept_code] = SourceCodeConcept(source_concept_code, source_concept_id, target_concept_id, destination_file)
 
-        for voc in sorted(vocabulary_id_list):
-            # print voc, vocabulary_id_list[voc]
-            log_stats('{0} \t\t {1}'.format(voc, vocabulary_id_list[voc]))
+    #      for voc in sorted(vocabulary_id_list):
+    #         # print voc, vocabulary_id_list[voc]
+    #         log_stats('{0} \t\t {1}'.format(voc, vocabulary_id_list[voc]))
 
-    log_stats('build_maps done')
+    #  log_stats('build_maps done')
 
-
+    
 # -----------------------------------
 # -----------------------------------
 def persist_lookup_tables():
@@ -525,6 +636,7 @@ def write_person_record(beneficiary):
     person_fd.write('{0},'.format(yd.BENE_BIRTH_DT[4:6]))                                    # month_of_birth
     person_fd.write('{0},'.format(yd.BENE_BIRTH_DT[6:8]))                                    # day_of_birth
     person_fd.write(',')                                                                     # time_of_birth
+    print ("yd.BENE_RACE_CD: " + str(yd.BENE_RACE_CD)) 
     if int(yd.BENE_RACE_CD) == 1:                                                            # race_concept_id and ethnicity_concept_id
         person_fd.write('{0},'.format(OMOP_CONSTANTS.RACE_WHITE))
         person_fd.write('{0},'.format(OMOP_CONSTANTS.ETHNICITY_NON_HISPANIC))
@@ -664,9 +776,9 @@ def write_drug_records(beneficiary):
         #todo: use standard OMOP concepts for unmapped
         drug_source_concept_id = 0
         drug_concept_id = 0
-        if ndc_code in source_code_concept_dict:
-            drug_source_concept_id = source_code_concept_dict[ndc_code].source_concept_id
-            drug_concept_id = source_code_concept_dict[ndc_code].target_concept_id
+        if (OMOP_CONSTANTS.NDC_VOCABULARY_ID,ndc_code) in source_code_concept_dict:
+            drug_source_concept_id = source_code_concept_dict[OMOP_CONSTANTS.NDC_VOCABULARY_ID,ndc_code].source_concept_id
+            drug_concept_id = source_code_concept_dict[OMOP_CONSTANTS.NDC_VOCABULARY_ID,ndc_code].target_concept_id
 
         write_drug_exposure(drug_exp_fd, beneficiary.person_id,
                             drug_concept_id=drug_concept_id,
@@ -868,16 +980,20 @@ def process_inpatient_records(beneficiary):
     for raw_rec in beneficiary.inpatient_records:
         rec = InpatientClaim(raw_rec)
         i = 0
-        for code in rec.ICD9_DGNS_CD_list + rec.ICD9_PRCDR_CD_list + rec.HCPCS_CD_list:
+        for (vocab,code) in ([(OMOP_CONSTANTS.ICD_9_VOCAB_ID, icd9fix(x)) for x in rec.ICD9_DGNS_CD_list] +
+                             [(OMOP_CONSTANTS.ICD_9_VOCAB_ID, icd9fix(x)) for x in rec.ICD9_PRCDR_CD_list] +
+                             [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID, x) for x in rec.HCPCS_CD_list]):
+
             if rec.CLM_FROM_DT != '':
                 #todo: use standard OMOP concepts for unmapped
                 source_concept_id = 0
                 target_concept_id = 0
                 destination_file = DESTINATION_FILE_CONDITION
-                if code in source_code_concept_dict:
-                    source_concept_id = source_code_concept_dict[code].source_concept_id
-                    target_concept_id = source_code_concept_dict[code].target_concept_id
-                    destination_file = source_code_concept_dict[code].destination_file
+
+                if (vocab,code) in source_code_concept_dict:
+                    source_concept_id = source_code_concept_dict[vocab,code].source_concept_id
+                    target_concept_id = source_code_concept_dict[vocab,code].target_concept_id
+                    destination_file = source_code_concept_dict[vocab,code].destination_file
                 if destination_file == DESTINATION_FILE_PROCEDURE:
                     write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                procedure_concept_id=source_concept_id,
@@ -890,11 +1006,11 @@ def process_inpatient_records(beneficiary):
 
                 elif destination_file == DESTINATION_FILE_CONDITION:
                     write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
-                                               condition_concept_id=source_concept_id,
+                                               condition_concept_id=target_concept_id,
                                                from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
                                                condition_type_concept_id=OMOP_CONSTANTS.INPAT_CONDITION_1ST_POSITION + i,
                                                condition_source_value=code,
-                                               condition_source_concept_id=target_concept_id,
+                                               condition_source_concept_id=source_concept_id,
                                                visit_occurrence_id=beneficiary.get_visit_id(rec.CLM_FROM_DT))
 
                 elif destination_file == DESTINATION_FILE_DRUG:
@@ -987,16 +1103,20 @@ def process_outpatient_records(beneficiary):
         # blech...index math to derive conceptid !          ############ FIX #########
         # ip_proc_offset = len(rec.ICD9_DGNS_CD_list)
         i = 0
-        for code in list(rec.ADMTNG_ICD9_DGNS_CD) + rec.ICD9_DGNS_CD_list + rec.ICD9_PRCDR_CD_list + rec.HCPCS_CD_list:
+        
+        for (vocab,code) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,icd9fix(rec.ADMTNG_ICD9_DGNS_CD))]) +
+                            [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,icd9fix(x)) for x in rec.ICD9_DGNS_CD_list] +
+                            [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,icd9fix(x)) for x in rec.ICD9_PRCDR_CD_list] +
+                            [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,x) for x in rec.HCPCS_CD_list]):
             if rec.CLM_FROM_DT != '':
                 #todo: use standard OMOP concepts for unmapped
                 source_concept_id = 0
                 target_concept_id = 0
                 destination_file = DESTINATION_FILE_CONDITION
-                if code in source_code_concept_dict:
-                    source_concept_id = source_code_concept_dict[code].source_concept_id
-                    target_concept_id = source_code_concept_dict[code].target_concept_id
-                    destination_file = source_code_concept_dict[code].destination_file
+                if (vocab,code) in source_code_concept_dict:
+                    source_concept_id = source_code_concept_dict[vocab,code].source_concept_id
+                    target_concept_id = source_code_concept_dict[vocab,code].target_concept_id
+                    destination_file = source_code_concept_dict[vocab,code].destination_file
                 if destination_file == DESTINATION_FILE_PROCEDURE:
                     write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                procedure_concept_id=target_concept_id,
@@ -1107,16 +1227,19 @@ def process_carrier_records(beneficiary):
         # blech...index math to derive conceptid !          ############ FIX #########
         # ip_proc_offset = len(rec.ICD9_DGNS_CD_list)
         i = 0
-        for code in rec.ICD9_DGNS_CD_list  + rec.HCPCS_CD_list + rec.LINE_ICD9_DGNS_CD_list:
+        for (vocab,code) in ([(OMOP_CONSTANTS.ICD_9_VOCAB_ID, icd9fix(x)) for x in rec.ICD9_DGNS_CD_list] +
+                            [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID, x) for x in rec.HCPCS_CD_list] +
+                            [(OMOP_CONSTANTS.ICD_9_VOCAB_ID, icd9fix(x)) for x in  rec.LINE_ICD9_DGNS_CD_list]):
+
             if rec.CLM_FROM_DT != '':
                 #todo: use standard OMOP concepts for unmapped
                 source_concept_id = 0
                 target_concept_id = 0
                 destination_file = DESTINATION_FILE_CONDITION
-                if code in source_code_concept_dict:
-                    source_concept_id = source_code_concept_dict[code].source_concept_id
-                    target_concept_id = source_code_concept_dict[code].target_concept_id
-                    destination_file = source_code_concept_dict[code].destination_file
+                if (vocab,code) in source_code_concept_dict:
+                    source_concept_id = source_code_concept_dict[vocab,code].source_concept_id
+                    target_concept_id = source_code_concept_dict[vocab,code].target_concept_id
+                    destination_file = source_code_concept_dict[vocab,code].destination_file
                 if destination_file == DESTINATION_FILE_PROCEDURE:
                     write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                procedure_concept_id=target_concept_id,

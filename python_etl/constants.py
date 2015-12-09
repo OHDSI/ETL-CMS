@@ -37,6 +37,7 @@ class OMOP_CONSTANTS(object):
     MEASUREMENT_DERIVED_VALUE           = "45754907"
     OBSERVATION_CHIEF_COMPLAINT         = "38000282"
 
+    ICD_9_VOCAB_ID                      = 'ICD9'
     ICD_9_DIAGNOSIS_VOCAB_ID            = 'ICD9CM'
     ICD_9_PROCEDURES_VOCAB_ID           = 'ICD9Proc'
     HCPCS_VOCABULARY_ID                 = 'HCPCS'
@@ -51,6 +52,22 @@ class OMOP_CONSTANTS(object):
     OUTPATIENT_PLACE_OF_SERVICE_SOURCE        = "Outpatient Facility"
     CARRIER_CLAIMS_PLACE_OF_SERVICE_SOURCE    = "Office"                    ## fix this
 
+    
+# --------------------
+# Record layout for the CONCEPT_RELATIONSHIP.csv file
+# It is used to map: OMOP (NCD) -> OMOP (RXNORM)
+# It is used to map: OMOP (ICD9) -> OMOP (SNOMED)
+# It is used to map: OMOP (HCPCS) -> OMOP (CPT4)
+# --------------------
+class OMOP_CONCEPT_RELATIONSHIP_RECORD(object):
+    CONCEPT_ID_1      = 0
+    CONCEPT_ID_2      = 1
+    RELATIONSHIP_ID   = 2
+    VALID_START_DATE  = 3
+    VALID_END_DATE    = 4
+    INVALID_REASON    = 5
+    fieldCount = INVALID_REASON + 1    
+    
 # --------------------
 # Record layout for ICD9 mapping file
 # --------------------
