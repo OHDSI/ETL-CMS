@@ -1,17 +1,18 @@
-import os,os.path,sys,datetime,subprocess,string,urllib.request,zipfile
+import os,os.path,sys,datetime,subprocess,string,urllib,zipfile
 from time import strftime
 
 #------------------------
 #  2015-02-05  D. O'Hara - requires wget
 #  2015-02-06  RSD - requires Python 3.2+, takes command line arguments
 #  2015-02-18  RSD - Fix combining CSVs, don't re-download existing files
+#  2015-12-10  Christophe Lambert -- converted script to python 2.7, and cleaned up command line arguments.
 #------------------------
 
 # This script will download and unzip SynPUF files from CMS.
 #
-# To run this script, you must have Python 3.2+ installed on your system
+# To run this script, you must have Python 2.7 installed on your system
 # From the command line, type:
-# python path/to/input path/to/output
+# python ppath/to/output
 #
 # This will download SynPUF files and extract them into path/to/output
 #
@@ -20,23 +21,29 @@ from time import strftime
 # For more information about SynPUF see:
 # http://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html
 
-#-----------------------------------
-#- set configuration parms
-#-----------------------------------
 
-# The only part of this script that requires hand-editing was the INPUT/OUTPUT
-# directories.  Let us just read them from the command line.  This also
-# allows people to enter a Windows-based path.
+# Read output directory from the command line
 if len(sys.argv) < 3:
-    print("usage: get_synpuf_files.py path/to/input/directory path/to/output/directory")
+    print("usage: get_synpuf_files.py path/to/output/directory <SAMPLE> ... [SAMPLE]")
+    print("where each SAMPLE is a number from 1 to 20, representing the 20 parts of the CMS data")
     quit();
 
+SAMPLE_RANGE = []
+for i in range(2,len(sys.argv)):
+    try:
+        x = int(sys.argv[i])
+        if(x <1 or x > 20):
+            raise ValueError('Invalid sample number')
+        SAMPLE_RANGE.append(x)
+    except ValueError:
+        print("Invalid sample number: " + sys.argv[i] + ". Must be in range 1..20")
+        quit()
+    
 
-INPUT_DIRECTORY     = sys.argv[1]
-OUTPUT_DIRECTORY    = sys.argv[2]
+OUTPUT_DIRECTORY    = sys.argv[1]
 if not os.path.exists(OUTPUT_DIRECTORY): os.makedirs(OUTPUT_DIRECTORY)
 
-SAMPLE_RANGE = [4,15]
+
 
 #-----------------------------------
 #-----------------------------------
@@ -69,8 +76,6 @@ def download_synpuf_files(sample_directory, sample_number):
     download_directory = os.path.join(sample_directory,"DE_{0}".format(sample_number))
     if not os.path.exists(download_directory): os.makedirs(download_directory)
 
-    # Is there a Python library we can leverage to do the downloading so
-    # we avoid the dependency on wget?
     for base_url,sp_file in synpuf_files:
         sp_file = sp_file.replace('~~',str(sample_number))
         file_url = 'http://{0}/{1}'.format(base_url, sp_file)
@@ -83,12 +88,12 @@ def download_synpuf_files(sample_directory, sample_number):
             continue
         else:
             print('..downloading -> ', file_url)
-            urllib.request.urlretrieve(file_url, file_local)
+            urllib.urlretrieve(file_url, filename=file_local)
             zipfile.ZipFile(file_local).extractall(download_directory)
 
 
     #-- combine the beneficiary files
-    combine_beneficiary_files(download_directory, download_directory, sample_number)
+    combine_beneficiary_files(download_directory, sample_number)
 
     print(get_timestamp(),' Done')
 
@@ -96,7 +101,7 @@ def download_synpuf_files(sample_directory, sample_number):
 #-----------------------------------
 #- combine 3 beneficiary files into 1, with the year prefixed
 #-----------------------------------
-def combine_beneficiary_files(sample_directory, output_directory, sample_number):
+def combine_beneficiary_files(output_directory, sample_number):
     print('-'*80)
     print(get_timestamp(),' combine_beneficiary_files starting: sample_number=',sample_number)
 
@@ -109,7 +114,7 @@ def combine_beneficiary_files(sample_directory, output_directory, sample_number)
 
     with open(output_bene_filename, 'w') as f_out:
         for year in ['2008','2009','2010']:
-            input_bene_filename = os.path.join(sample_directory,
+            input_bene_filename = os.path.join(output_directory,
                             'DE1_0_{0}_Beneficiary_Summary_File_Sample_{1}.csv'.format(year,sample_number))
             print('Reading    ->',input_bene_filename)
             recs_in=0
@@ -141,7 +146,6 @@ if __name__ == '__main__':
 
     print(get_timestamp(),' Combine Beneficiary Year files...starting')
 
-    print('INPUT_DIRECTORY          =', INPUT_DIRECTORY)
     print('OUTPUT_DIRECTORY         =', OUTPUT_DIRECTORY)
     print('SAMPLE_RANGE             =', SAMPLE_RANGE)
 
@@ -149,6 +153,6 @@ if __name__ == '__main__':
     # download from CMS
     #------
     for sample_number in SAMPLE_RANGE:
-        download_synpuf_files(INPUT_DIRECTORY, sample_number)
+        download_synpuf_files(OUTPUT_DIRECTORY, sample_number)
 
     print(get_timestamp(),' Done')
