@@ -8,9 +8,9 @@ class OMOP_CONSTANTS(object):
     GENDER_FEMALE                       = "8532"
 
     RACE_BLACK                          = "8516"
-    RACE_OTHER                          = "8522"
+    RACE_OTHER                          = "0" # 8522 deprecated
     RACE_WHITE                          = "8527"
-    RACE_NON_WHITE                      = "9178"
+    RACE_NON_WHITE                      = "0" # 9178 deprecated
 
     ETHNICITY_HISPANIC                  = "38003563"
     ETHNICITY_NON_HISPANIC              = "38003564"
@@ -24,6 +24,13 @@ class OMOP_CONSTANTS(object):
 
     OUTPAT_PROCEDURE_1ST_POSITION       = 38000269
     OUTPAT_CONDITION_1ST_POSITION       = 38000230
+    CC_PROCEDURE_1ST_POSITION           = 45756900
+    CC_CONDITION_1ST_POSITION           = 45756835
+    INPAT_VISIT_1ST_POSITION            = 44818517
+    OUTPAT_VISIT_1ST_POSITION           = 44818517
+    INPAT_VISIT_CONCEPT_ID              = 9201
+    OUTPAT_VISIT_CONCEPT_ID             = 9202
+    CARRIER_CLAIMS_VISIT_CONCEPT_ID     = 0
 
     OBS_PERIOD_ENROLLED_INSURANCE       = "44814722"
     OBS_PERIOD_ENROLLED_STUDY           = "44814723"
@@ -50,9 +57,9 @@ class OMOP_CONSTANTS(object):
 
     INPATIENT_PLACE_OF_SERVICE_SOURCE         = "Inpatient Facility"
     OUTPATIENT_PLACE_OF_SERVICE_SOURCE        = "Outpatient Facility"
-    CARRIER_CLAIMS_PLACE_OF_SERVICE_SOURCE    = "Office"                    ## fix this
+    CARRIER_CLAIMS_PLACE_OF_SERVICE_SOURCE    = " "
+    GENDER_SOURCE_CONCEPT_ID                  = 0    #gender_source_concept_id
 
-    
 # --------------------
 # Record layout for the CONCEPT_RELATIONSHIP.csv file
 # It is used to map: OMOP (NCD) -> OMOP (RXNORM)
@@ -66,8 +73,8 @@ class OMOP_CONCEPT_RELATIONSHIP_RECORD(object):
     VALID_START_DATE  = 3
     VALID_END_DATE    = 4
     INVALID_REASON    = 5
-    fieldCount = INVALID_REASON + 1    
-    
+    fieldCount = INVALID_REASON + 1
+
 # --------------------
 # Record layout for ICD9 mapping file
 # --------------------
@@ -130,7 +137,7 @@ class SYNPUF_FILE_TOKENS(object):
 # --------------------
 class BENEFICIARY_SUMMARY_RECORD(object):
     FILE_YEAR                   = 0
-    DESYNPUF_ID                  = 1
+    DESYNPUF_ID                 = 1
     BENE_BIRTH_DT               = 2
     BENE_DEATH_DT               = 3
     BENE_SEX_IDENT_CD           = 4

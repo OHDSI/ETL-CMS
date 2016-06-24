@@ -19,7 +19,7 @@ from time import strftime
 # The SynPUF files are split into 20 sets of files.
 #
 # For more information about SynPUF see:
-# http://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html
+# https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html
 
 
 # Read output directory from the command line
@@ -38,7 +38,7 @@ for i in range(2,len(sys.argv)):
     except ValueError:
         print("Invalid sample number: " + sys.argv[i] + ". Must be in range 1..20")
         quit()
-    
+
 
 OUTPUT_DIRECTORY    = sys.argv[1]
 if not os.path.exists(OUTPUT_DIRECTORY): os.makedirs(OUTPUT_DIRECTORY)
@@ -78,7 +78,20 @@ def download_synpuf_files(sample_directory, sample_number):
 
     for base_url,sp_file in synpuf_files:
         sp_file = sp_file.replace('~~',str(sample_number))
-        file_url = 'http://{0}/{1}'.format(base_url, sp_file)
+
+        # The link on cms.gov website for the following file has .csv.zip in it, so change the variable sp_file.
+        # Also, the link for cms.gov has 'https' whereas the link for 'downloads.cms.gov' has 'http', so the
+        # file_url has been modified based on the base_url.
+        if sp_file == 'DE1_0_2008_to_2010_Carrier_Claims_Sample_11A.zip':           # actual filename on CMS website has csv in it.
+            sp_file = 'DE1_0_2008_to_2010_Carrier_Claims_Sample_11A.csv.zip'
+        if base_url == url_downloads_cms_gov:                     #base urls have different protocols. one has http while other has https.
+            file_url = 'http://{0}/{1}'.format(base_url, sp_file)
+        elif base_url == url_www_cms_gov:
+            file_url = 'https://{0}/{1}'.format(base_url, sp_file)
+
+        if '.csv.zip' in sp_file:                   #downloaded file name shouldn't have .csv.zip.
+            sp_file = sp_file.replace('.csv.zip', '.zip')
+
         file_local = os.path.join(download_directory,sp_file)
         # If the file already exists, let's not download it again
         # If a file is only partially downloaded, it will need to be deleted
@@ -90,6 +103,17 @@ def download_synpuf_files(sample_directory, sample_number):
             print('..downloading -> ', file_url)
             urllib.urlretrieve(file_url, filename=file_local)
             zipfile.ZipFile(file_local).extractall(download_directory)
+    #---------------------------------------------------------------------------------------
+    # some files in the zipped folder have Copy.csv in their names. The following code will
+    # read all the files in the download folder and remove Copy from file name.
+    #---------------------------------------------------------------------------------------
+    for filename in os.listdir(download_directory):
+        if ' - Copy.csv' in filename:
+            filename1 = filename.replace(' - Copy.csv', '.csv')
+            print ('..Renaming file ->', filename)
+            o_filepath = os.path.join(download_directory, filename)     # old file path
+            n_filepath = os.path.join(download_directory, filename1)    # new file path
+            os.rename(o_filepath, n_filepath)   # rename the old file
 
 
     #-- combine the beneficiary files
