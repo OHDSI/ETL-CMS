@@ -29,16 +29,13 @@ The WhiteRabbit/RabbitInAHat files used to develop the ETL specification, along 
 
 
 ### scripts
-The scripts folder holds handy scripts for munging some of the raw
+The scripts folder holds handy scripts for downloading and munging some of the raw
 data used in the ETL process. Instructions for their use can be found
-in the python_etl/README.md file.
+in the [python_etl/README.md](https://github.com/OHDSI/ETL-CMS/blob/master/python_etl/README.md) file.
 
 
 ### hand_conversion
-@claire-oi hand-converted a couple patients worth of SynPUF data into CDMv5.  Along the way she found several inconsistencies and ambiguities with the ETL specification which we aim to address soon.  Her internal notes, along with the sample patients and her hand-converted CDM outputs are available in this folder.
-
-Any updates/additions you would like to make to the test cases should be put in the Excel files in the `hand_conversion` directory.  Then run the `csvify.rb` script in the `hand_conversion` directory.  This script will re-generate the CSV files used for testing in the `python_etl/test_data` directory.
-
+@claire-oi hand-converted a couple patients worth of SynPUF data into CDMv5.  Along the way she found several inconsistencies and ambiguities with the ETL specification which have hopefully been addressed.  Her internal notes, along with the sample patients and her hand-converted CDM outputs are available in the [hand_conversion](https://github.com/OHDSI/ETL-CMS/tree/master/hand_conversion) directory.
 
 ### Additional Resources
 - [Partial ETL of SEER Medicare to OMOP CDMv4](https://github.com/outcomesinsights/seer_to_omop_cdmv4) - [Outcomes Insights](http://outins.com) has released their partial implementation of a SEER Medicare ETL, along with their specification document to serve as a reference for the ETLs created by this workgroup
