@@ -54,6 +54,7 @@ files and to create OMOP CDM v5-compatible4 CSV files. Those contributors includ
 - Erica Voss [@ericaVoss](http://forums.ohdsi.org/users/ericaVoss), Janssen Research and Development.
 - Jennifer Duryea [@jenniferduryea](https://github.com/jenniferduryea), Outcomes Insights, Inc.
 - Don O'Hara [@donohara](https://github.com/donohara), Evidera.
+- Claire Cangialose [@claire-oi](https://github.com/claire-oi), Outcomes Insights, Inc.
 - Patrick Ryan [@Patrick_Ryan](http://forums.ohdsi.org/users/Patrick_Ryan), Janssen Research and Development.
 
 Development was partial, stopping in August 2015. Researchers at the
