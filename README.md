@@ -20,12 +20,12 @@ This marks the first availability of a massive open CDM v5-adhering synthetic da
 
 ### python_etl
 A complete Python-based ETL of the DE-SynPUF data into CDMv5-compatible CSV
-files. See the README.md file therein for detailed instructions for
+files. See the [README.md](https://github.com/OHDSI/ETL-CMS/blob/master/python_etl/README.md) file therein for detailed instructions for
 running the ETL, as well as creating and loading the data into a CDMv5 database.
 
 
 ### RabbitInAHat
-The WhiteRabbit/RabbitInAHat files used to develop the ETL specification, along with the ETL specification in DOCX format.
+The WhiteRabbit/RabbitInAHat files used to develop the ETL specification, along with an out-of-date ETL specification in DOCX format.
 
 
 ### scripts
