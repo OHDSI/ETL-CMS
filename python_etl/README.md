@@ -169,38 +169,38 @@ b) If you don't want to use the public schema, create a new empty schema.  e.g. 
 
 c) Create a separate empty schema for ACHILLES results e.g. ``CREATE SCHEMA results``
 
-d) Download  [create_CDMv5_tables.sql](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/create_CDMv5_tables.sql) and replace the schema name synpuf5 with the new schema created in step (b). Execute the file via the PostgreSQL psql terminal or pgadmin III. This file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema.
+d) Download  [create_CDMv5_tables.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_tables.sql) and replace the schema name synpuf5 with the new schema created in step (b). Execute the file via the PostgreSQL psql terminal or pgadmin III. This file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema.
 
 e) If the queries in step (d) executed successfully, all the tables will have been created under the new schema you used, and are empty.
 
- To load the vocabulary data into the tables, download [load_CDMv5_vocabulary.sql](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/load_CDMv5_vocabulary.sql) and make the following changes in this file:
+ To load the vocabulary data into the tables, download [load_CDMv5_vocabulary.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_vocabulary.sql) and make the following changes in this file:
 - Replace the schema name synpuf5 with the schema you created in in step (b).
 - Change BASE_OMOP_INPUT_DIRECTORY to the directory where you store your vocabulary files that you want to load into PostgreSQL.
 
 Execute the queries in the modified file. These queries will copy the vocabulary data from csv files to the PostgreSQL database.
 
-To load the data from DE_1 to DE_20 into tables, download [load_CDMv5_synpuf.sql](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/load_CDMv5_synpuf) and make the following changes in this file:
+To load the data from DE_1 to DE_20 into tables, download [load_CDMv5_synpuf.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_synpuf.sql) and make the following changes in this file:
 - Replace the schema name synpuf5 with the schema you created in in step (b)
 - Replace the location of the input csv files that you want to load to PostgreSQL.
 
 Execute the queries in the modified file. These queries will import the ETL .csv data from DE_1 through DE_20 to the PostgreSQL database.
 
 f) Create constraints: If the step (e) executed successfully, records were inserted into tables and now primary and foreign keys can be assigned to all tables. Download
-    the sql file [create_CDMv5_constraints](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/create_CDMv5_constraints) and update the schema name with the schema you created in step (b).
+    the sql file [create_CDMv5_constraints](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_constraints.sql) and update the schema name with the schema you created in step (b).
     Execute the queries present in the downloaded file. Make sure you have loaded all of  your data from step (e) before running this step. If you add the constraints before loading the data, it will slow down
     the load process because the database needs to check the constraints before adding any record to the database.
 
 g) Though the database will create indexes for primary keys, but the queries will take minutes to execute if the search is not based on the primary keys.
     Additional indexes based on foreign keys and other frequently used fields need to added to the tables to improve the query execution time. Download
-    the sql file [create_CDMv5_indices](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/create_CDMv5_indices) and update the schema with the schema you created in step (b). Execute the queries in the modified file. This concludes the database creation, loading, and optimization.
+    the sql file [create_CDMv5_indices](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_indices.sql) and update the schema with the schema you created in step (b). Execute the queries in the modified file. This concludes the database creation, loading, and optimization.
 
 ## 8. Create ERA tables
   Once you are done with all the steps mentioned in section (7), you can generate data for drug_era and condition_era tables as follows:
 
-  a) condition_era: Download the sql file [create_CDMv5_condition_era.sql](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/create_CDMv5_condition_era.sql) and update the schema with the
+  a) condition_era: Download the sql file [create_CDMv5_condition_era.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_condition_era.sql) and update the schema with the
     schema you created in step (7b). Execute the queries present in the modified file.
 
-  b) drug_era: Download sql file [create_CDMv5 _drug_era_non_stockpile.sql](https://github.com/OHDSI/ETL-CMS/tree/unm-improvements/SQL/create_CDMv5_drug_era_non_stockpile.sql) and update the schema with the
+  b) drug_era: Download sql file [create_CDMv5 _drug_era_non_stockpile.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_drug_era_non_stockpile.sql) and update the schema with the
     schema you created in step (7b). Execute the queries present in the modified file.
   N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
 
