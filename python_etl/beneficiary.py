@@ -20,6 +20,9 @@ class Beneficiary(object):
             self.BENE_SMI_CVRAGE_TOT_MONS = int(input_record[rcd.BENE_SMI_CVRAGE_TOT_MONS])
             self.BENE_HMO_CVRAGE_TOT_MONS = int(input_record[rcd.BENE_HMO_CVRAGE_TOT_MONS ])
             self.PLAN_CVRG_MOS_NUM = int(input_record[rcd.PLAN_CVRG_MOS_NUM])
+            self.SP_STATE_CODE = int(input_record[rcd.SP_STATE_CODE])
+            self.BENE_COUNTY_CD = int(input_record[rcd.BENE_COUNTY_CD])
+            self.LOCATION_ID = (str(self.SP_STATE_CODE) + "-" + str(self.BENE_COUNTY_CD))
 
         def max_coverage_months(self):
             return max(self.BENE_HI_CVRAGE_TOT_MONS,  self.BENE_SMI_CVRAGE_TOT_MONS,
@@ -47,10 +50,13 @@ class Beneficiary(object):
                     self.BENE_HMO_CVRAGE_TOT_MONS, self.PLAN_CVRG_MOS_NUM,
                     self.max_coverage_months())
 
-    def __init__(self, DESYNPUF_ID, person_id):
+    def __init__(self, DESYNPUF_ID, person_id, SP_STATE_CODE, BENE_COUNTY_CD):
         self.year_data_list = {}
         self.DESYNPUF_ID  = DESYNPUF_ID
         self.person_id = person_id
+        self.SP_STATE_CODE = SP_STATE_CODE
+        self.BENE_COUNTY_CD = BENE_COUNTY_CD
+        self.LOCATION_ID = (str(self.SP_STATE_CODE) + "-" + str(self.BENE_COUNTY_CD))
 
         self.visit_dates = {}
 
@@ -125,6 +131,16 @@ class Beneficiary(object):
                 break
         return y
 
+    def PayerPlanPerioYearDict(self):
+        payer_plan_year_dict = {}
+        for year in ['2010','2009','2008']:
+            if year in self.year_data_list:
+                payer_plan_year_dict[year,'BENE_HI_CVRAGE_TOT_MONS'] = self.year_data_list[year].BENE_HI_CVRAGE_TOT_MONS
+                payer_plan_year_dict[year,'BENE_SMI_CVRAGE_TOT_MONS'] = self.year_data_list[year].BENE_SMI_CVRAGE_TOT_MONS
+                payer_plan_year_dict[year,'BENE_HMO_CVRAGE_TOT_MONS'] = self.year_data_list[year].BENE_HMO_CVRAGE_TOT_MONS
+                payer_plan_year_dict[year,'PLAN_CVRG_MOS_NUM'] = self.year_data_list[year].PLAN_CVRG_MOS_NUM
+        return payer_plan_year_dict
+
     #--------------------
     #--------------------
     def ObservationPeriodList(self):
@@ -146,37 +162,6 @@ class Beneficiary(object):
 
         return obs_period_list
 
-        # start_year = ''
-        # start_month = ''
-        # end_year = ''
-        # end_month = ''
-        #
-        # for year in ['2008','2009','2010']:
-        #     if year in self.year_data_list:
-        #         y = self.year_data_list[year]
-        #         #- keep earliest year with coverage for start
-        #         if start_year == '' and y.max_coverage_months() > 0:
-        #             start_year = year
-        #             start_month = 12 - int(y.max_coverage_months()) + 1
-        #
-        #         #- keep last year with coverage for end
-        #         if y.max_coverage_months() > 0:
-        #             end_year = year
-        #             end_month = y.max_coverage_months()
-        #             if start_month > 1: end_month = min(12,start_month + y.max_coverage_months())
-        #
-        # from_date = ''
-        # to_date = ''
-        #
-        # if start_year != '' and start_month != '':
-        #     from_date = '{0}-{1}-01'.format(start_year, start_month)
-        #
-        # ## get proper end date
-        # if end_year != '' and end_month != '':
-        #     weekday, numdays = calendar.monthrange(int(end_year), int(end_month))
-        #     to_date = '{0}-{1}-{2}'.format(end_year, end_month, numdays )
-        #
-        # return from_date, to_date
 
     #--------------------
     # assumes file is in synpuf-id
@@ -216,11 +201,3 @@ class Beneficiary(object):
         sort_by_date(self._inpatient_records, self._inpatient_records_date_order_list, INPATIENT_CLAIMS_RECORD.CLM_FROM_DT)
         sort_by_date(self._outpatient_records, self._outpatient_records_date_order_list, OUTPATIENT_CLAIMS_RECORD.CLM_FROM_DT)
         sort_by_date(self._prescription_records, self._prescription_records_date_order_list, PRESCRIPTION_DRUG_RECORD.SRVC_DT)
-
-
-
-
-
-
-
-

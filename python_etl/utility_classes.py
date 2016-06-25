@@ -9,28 +9,25 @@ class Table_ID_Values(object):
         self.last_device_exposure_id = 1
         self.last_drug_cost_id = 1
         self.last_drug_exposure_id = 1
-
         self.last_location_id = 1
         self.last_measurement_id = 1
         self.last_observation_id = 1
         self.last_observation_period_id = 1
         self.last_payer_plan_period_id = 1
-
         self.last_person_id = 1
         self.last_procedure_cost_id = 1
         self.last_procedure_occurrence_id = 1
         self.last_specimen_id = 1
         self.last_visit_cost_id = 1
-
         self.last_visit_occurrence_id = 1
-
-        # care-site and provider are handled separately
+        self.last_care_site_id = 1
+        self.last_provider_id = 1   
 
     def Load(self, filename, log_stats):
         with open(filename,'r') as f_in:
             line = f_in.readline()
             flds = line.split()
-            if len(flds) == 16:
+            if len(flds) == 18:
                 self.last_condition_occurrence_id = int(flds[0])
                 self.last_device_cost_id = int(flds[1])
                 self.last_device_exposure_id = int(flds[2])
@@ -44,12 +41,14 @@ class Table_ID_Values(object):
                 self.last_payer_plan_period_id = int(flds[9])
 
                 self.last_person_id = int(flds[10])
-                self.last_procedure_cost_id = int(flds[10])
+                self.last_procedure_cost_id = int(flds[11])
                 self.last_procedure_occurrence_id = int(flds[12])
                 self.last_specimen_id = int(flds[13])
                 self.last_visit_cost_id = int(flds[14])
 
                 self.last_visit_occurrence_id = int(flds[15])
+                self.last_care_site_id = int(flds[16])
+                self.last_provider_id = int(flds[17])
 
         log_stats('--Table_ID_Values loaded:')
         log_stats('\tlast_condition_occurrence_id \t: {0}'.format(self.last_condition_occurrence_id))
@@ -71,6 +70,8 @@ class Table_ID_Values(object):
         log_stats('\tlast_visit_cost_id \t: {0}'.format(self.last_visit_cost_id))
 
         log_stats('\tlast_visit_occurrence_id \t: {0}'.format(self.last_visit_occurrence_id))
+        log_stats('\tlast_care_site_id \t: {0}'.format(self.last_care_site_id))
+        log_stats('\tlast_provider_id \t: {0}'.format(self.last_provider_id))
 
     def Save(self, filename):
         with open(filename,'w') as f_out:
@@ -93,7 +94,7 @@ class Table_ID_Values(object):
             f_out.write('{0}\t'.format(self.last_specimen_id))
             f_out.write('{0}\t'.format(self.last_visit_cost_id))
 
-            f_out.write('{0}'.format(self.last_visit_occurrence_id))
+            f_out.write('{0}\t'.format(self.last_visit_occurrence_id))
+            f_out.write('{0}\t'.format(self.last_care_site_id))
+            f_out.write('{0}'.format(self.last_provider_id))
             f_out.write('\n')
-
-

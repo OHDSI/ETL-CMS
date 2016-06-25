@@ -47,6 +47,47 @@ def combine_beneficiary_files(sample_directory, sample_number, output_bene_filen
 
     print 'Done: total records read ={0}, total records written={1}'.format(total_recs_in, total_recs_out)
 
+# -----------------------------------
+# - Combine 2 carrier files into 1, dropping the headers beneficiary files into 1, dropping th eheaders
+#
+# -----------------------------------
+def combine_carrier_files(sample_directory, sample_number, output_carrier_filename):
+
+    print '-'*80
+    print 'combine_carrier_files starting: sample_number=' + str(sample_number)
+    print 'Writing to ->' + output_carrier_filename
+
+    total_recs_in = 0
+    total_recs_out = 0
+
+    with open(output_carrier_filename, 'w') as f_out:
+        for part in ['A','B']:
+            input_carrier_filename = os.path.join(sample_directory,
+                                               'DE1_0_2008_to_2010_Carrier_Claims_Sample_{1}{0}.csv'.format(part, sample_number))
+            print 'Reading    ->' + input_carrier_filename
+            if not os.path.exists(input_carrier_filename):
+                print '.....not found, looking for zip'
+                zipped_file = input_carrier_filename.replace('.csv','.zip')
+                if os.path.exists(zipped_file):
+                    subprocess.call(["unzip", "-d", sample_directory, zipped_file])
+                if not os.path.exists(input_carrier_filename):
+                    print '** File not found !! ', input_carrier_filename
+                    raise Exception()
+            recs_in = 0
+            with open(input_carrier_filename, 'r') as f_in:
+                line = f_in.readline()  # header
+                if part == 'A':
+                    f_out.write(line)
+                for line in f_in:
+                    recs_in += 1
+                    if recs_in % 25000 == 0:
+                        print 'Part-{0}: records read ={1}, total written={2}'.format(part, recs_in, total_recs_out)
+                    f_out.write(line)
+                    total_recs_out += 1
+            print 'Part-{0}: total records read ={1}'.format(part, recs_in)
+            total_recs_in += recs_in
+
+    print 'Done: total records read ={0}, total records written={1}'.format(total_recs_in, total_recs_out)
 
 class FileDescriptor(object):
     def __init__(self, token, mode, directory_name, filename, sample_number, verify_exists=False, sort_required=False):
@@ -76,15 +117,17 @@ class FileDescriptor(object):
         if verify_exists:
             # handle carrier claims
             files = [self.complete_pathname]
-            if self.token == 'carrier':
-                files = [ self.complete_pathname.replace('.csv', 'A.csv'),
-                          self.complete_pathname.replace('.csv', 'B.csv')]
+            #if self.token == 'carrier':
+            #    files = [ self.complete_pathname.replace('.csv', 'A.csv'),
+            #              self.complete_pathname.replace('.csv', 'B.csv')]
             for f in files:
                 print '.....verifying ->', f
                 if not os.path.exists(f):
                     # handle beneficiary
                     if self.token == SYNPUF_FILE_TOKENS.BENEFICARY:
                         combine_beneficiary_files(directory_name, sample_number, output_bene_filename=f)
+                    elif self.token == SYNPUF_FILE_TOKENS.CARRIER:
+                        combine_carrier_files(directory_name, sample_number, output_carrier_filename=f)
                     else:
                         #  unzip it if it's there
                         print '.....not found, looking for zip'
@@ -101,24 +144,34 @@ class FileDescriptor(object):
             print '.....verifying ->', sorted_path
             if not os.path.exists(sorted_path):
                 zargs = []
-                if self.token == SYNPUF_FILE_TOKENS.BENEFICARY:
-                    zargs = ["sort",
-                             "--output=" + sorted_path,
-                             "--key=2",
-                             "--field-separator=,",
-                             self.complete_pathname]
-                elif self.token == SYNPUF_FILE_TOKENS.CARRIER:
-                    zargs = ["sort",
-                             "--output=" + sorted_path,
-                             self.complete_pathname.replace('.csv', 'A.csv'),
-                             self.complete_pathname.replace('.csv', 'B.csv'),
-                            ]
+                if self.token == SYNPUF_FILE_TOKENS.BENEFICARY:  #Sort on second field
+                    fin = open(self.complete_pathname,"r")
+                    firstline = fin.readline()
+                    textfile = []
+                    for line in fin:
+                        v = line.split(",")
+                        textfile.append([v[1],line])
+                    fin.close()
+                    textfile.sort()
+                    fout = open(sorted_path,"w")
+                    fout.write(firstline)
+                    for (key,line) in textfile:
+                        fout.write(line)
+                    fout.close()
                 else:
-                    zargs = ["sort",
-                             "--output=" + sorted_path,
-                             self.complete_pathname]
-                print zargs
-                subprocess.call(zargs)
+                    fin = open(self.complete_pathname,"r")
+                    firstline = fin.readline()
+                    textfile = []
+                    for line in fin:
+                        textfile.append(line)
+                    fin.close()
+                    textfile.sort()
+                    fout = open(sorted_path,"w")
+                    fout.write(firstline)
+                    for line in textfile:
+                        fout.write(line)
+                    fout.close()
+
             self.complete_pathname = sorted_path
 
 
@@ -141,9 +194,8 @@ class FileDescriptor(object):
 
         if self.fd is None:
             self.fd = open(self.complete_pathname,'rU')
-            # djo 2015-07-16: files are sorted, so dont skip 1st data rec
-            # ignore header
-            # rec = self.fd.readline()
+            # 2016-05-26 Skip header which is now at the top of every sorted file
+            rec = self.fd.readline()
 
         # save_DESYNPUF_ID = ''
         recs_in = 0
@@ -158,10 +210,7 @@ class FileDescriptor(object):
                     print 'get_patient_records for ',DESYNPUF_ID, ', recs_in=', recs_in, ', file: ', self.complete_pathname
                 if recs_in > 10000 :
                     raise
-                # print 'in->', rec
-                # count on this header record field being in every file
-                if '"DESYNPUF_ID"' in rec:
-                    continue
+
                 if rec[0:len(DESYNPUF_ID)] == DESYNPUF_ID:
                     # print '\t ** keep'
                     # store array of fields instead of raw rec
@@ -224,42 +273,6 @@ class FileDescriptor(object):
     @property
     def records_written(self):
         return self._records_written
-
-    #------
-    # def sorted(self):
-    #     sorted_path = self.complete_pathname + '.srt'
-    #     if not (os.path.exists(sorted_path) and os.path.getsize(sorted_path) > 0):
-    #         print("Sorting {0}".format(self.complete_pathname))
-    #         #-------
-    #         # with open(sorted_path, 'w') as sorted_file:
-    #         #     with open(self.complete_pathname) as source:
-    #         #         contents = sorted(source.readlines())
-    #         #         sorted_file.writelines(contents)
-    #         #         sorted_file.flush()
-    #         #-------
-    #         # big files!
-    #         #-------
-    #         zargs = []
-    #         if self.token == 'beneficiary':
-    #             zargs = ["sort",
-    #                     "--output=" + sorted_path,
-    #                     "--key=2",
-    #                     "--field-separator=,",
-    #                     self.complete_pathname]
-    #         elif self.token == 'carrier_AB':
-    #             zargs = ["sort",
-    #                     "--output=" + sorted_path,
-    #                     os.path.join(self.directory_name + "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(self.sample_number) + "A.csv"),
-    #                     os.path.join(self.directory_name + "DE1_0_2008_to_2010_Carrier_Claims_Sample_" + str(self.sample_number) + "B.csv"),
-    #                     ]
-    #         else:
-    #             zargs = ["sort",
-    #                     "--output=" + sorted_path,
-    #                     self.complete_pathname]
-    #         print zargs
-    #         subprocess.call(zargs)
-    #
-    #     return FileDescriptor(self.token, self.mode, self.directory_name, self.filename + '.srt', self.verify_exists)
 
 
 class FileControl(object):
@@ -374,4 +387,3 @@ class FileControl(object):
                     os.unlink(filedesc.complete_pathname)
                 except:
                     pass
-

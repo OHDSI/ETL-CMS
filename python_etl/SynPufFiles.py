@@ -271,6 +271,10 @@ class CarrierClaim(object):
         self.fields = record
 
     @property
+    def TAX_NUM(self):
+        return self.fields[CARRIER_CLAIMS_RECORD.TAX_NUM_1]
+
+    @property
     def DESYNPUF_ID(self):
         return self.fields[CARRIER_CLAIMS_RECORD.DESYNPUF_ID]
 
