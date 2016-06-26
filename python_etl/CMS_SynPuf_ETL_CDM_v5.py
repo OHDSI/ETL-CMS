@@ -1636,76 +1636,76 @@ def write_header_records():
             'race_source_concept_id,ethnicity_source_value,ethnicity_source_concept_id',
 
         'observation':
-            'observation_id, person_id, observation_concept_id, observation_date, observation_time, observation_type_concept_id, value_as_number,'
-            'value_as_string, value_as_concept_id, qualifier_concept_id, unit_concept_id, provider_id, visit_occurrence_id, observation_source_value,'
-            'observation_source_concept_id, unit_source_value, qualifier_source_value',
+            'observation_id,person_id,observation_concept_id,observation_date,observation_time,observation_type_concept_id,value_as_number,'
+            'value_as_string,value_as_concept_id,qualifier_concept_id,unit_concept_id,provider_id,visit_occurrence_id,observation_source_value,'
+            'observation_source_concept_id,unit_source_value,qualifier_source_value',
 
         'observation_period':
-            'observation_period_id,person_id, observation_period_start_date, observation_period_end_date, period_type_concept_id',
+            'observation_period_id,person_id,observation_period_start_date,observation_period_end_date,period_type_concept_id',
 
         'specimen':
-            'specimen_id, person_id, specimen_concept_id, specimen_type_concept_id, specimen_date, specimen_time, quantity,'
-            'unit_concept_id, anatomic_site_concept_id, disease_status_concept_id, specimen_source_id, specimen_source_value, unit_source_value,'
-            'anatomic_site_source_value, disease_status_source_value',
+            'specimen_id,person_id,specimen_concept_id,specimen_type_concept_id,specimen_date,specimen_time,quantity,'
+            'unit_concept_id,anatomic_site_concept_id,disease_status_concept_id,specimen_source_id,specimen_source_value,unit_source_value,'
+            'anatomic_site_source_value,disease_status_source_value',
 
         'death':
-            'person_id, death_date, death_type_concept_id, cause_concept_id, cause_source_value, cause_source_concept_id',
+            'person_id,death_date,death_type_concept_id,cause_concept_id,cause_source_value,cause_source_concept_id',
 
         'visit_occurrence':
-            'visit_occurrence_id, person_id, visit_concept_id, visit_start_date, visit_start_time, visit_end_date, visit_end_time,'
-            'visit_type_concept_id, provider_id, care_site_id, visit_source_value, visit_source_concept_id',
+            'visit_occurrence_id,person_id,visit_concept_id,visit_start_date,visit_start_time,visit_end_date,visit_end_time,'
+            'visit_type_concept_id,provider_id,care_site_id,visit_source_value,visit_source_concept_id',
 
         'visit_cost':
-            'visit_cost_id, visit_occurrence_id, currency_concept_id, paid_copay, paid_coinsurance, paid_toward_deductible,'
-            'paid_by_payer, paid_by_coordination_benefits, total_out_of_pocket, total_paid, payer_plan_period_id',
+            'visit_cost_id,visit_occurrence_id,currency_concept_id,paid_copay,paid_coinsurance,paid_toward_deductible,'
+            'paid_by_payer,paid_by_coordination_benefits,total_out_of_pocket,total_paid,payer_plan_period_id',
 
         'condition_occurrence':
-            'condition_occurrence_id, person_id, condition_concept_id, condition_start_date, condition_end_date, condition_type_concept_id,'
-            'stop_reason, provider_id, visit_occurrence_id, condition_source_value, condition_source_concept_id',
+            'condition_occurrence_id,person_id,condition_concept_id,condition_start_date,condition_end_date,condition_type_concept_id,'
+            'stop_reason,provider_id,visit_occurrence_id,condition_source_value,condition_source_concept_id',
 
         'procedure_occurrence':
-            'procedure_occurrence_id, person_id, procedure_concept_id, procedure_date, procedure_type_concept_id, modifier_concept_id,'
-            'quantity, provider_id, visit_occurrence_id, procedure_source_value, procedure_source_concept_id, qualifier_source_value',
+            'procedure_occurrence_id,person_id,procedure_concept_id,procedure_date,procedure_type_concept_id,modifier_concept_id,'
+            'quantity,provider_id,visit_occurrence_id,procedure_source_value,procedure_source_concept_id,qualifier_source_value',
 
         'procedure_cost':
-            'procedure_cost_id, procedure_occurrence_id, currency_concept_id, paid_copay, paid_coinsurance, paid_toward_deductible,'
-            'paid_by_payer, paid_by_coordination_benefits, total_out_of_pocket, total_paid, revenue_code_concept_id, payer_plan_period_id, revenue_code_source_value',
+            'procedure_cost_id,procedure_occurrence_id,currency_concept_id,paid_copay,paid_coinsurance,paid_toward_deductible,'
+            'paid_by_payer,paid_by_coordination_benefits,total_out_of_pocket,total_paid,revenue_code_concept_id,payer_plan_period_id,revenue_code_source_value',
 
         'drug_exposure':
-            'drug_exposure_id, person_id, drug_concept_id, drug_exposure_start_date, drug_exposure_end_date, drug_type_concept_id,'
-            'stop_reason, refills, quantity, days_supply, sig, route_concept_id, effective_drug_dose, dose_unit_concept_id,'
-            'lot_number, provider_id, visit_occurrence_id, drug_source_value, drug_source_concept_id, route_source_value, dose_unit_source_value',
+            'drug_exposure_id,person_id,drug_concept_id,drug_exposure_start_date,drug_exposure_end_date,drug_type_concept_id,'
+            'stop_reason,refills,quantity,days_supply,sig,route_concept_id,effective_drug_dose,dose_unit_concept_id,'
+            'lot_number,provider_id,visit_occurrence_id,drug_source_value,drug_source_concept_id,route_source_value,dose_unit_source_value',
 
         'drug_cost':
-            'drug_cost_id, drug_exposure_id, currency_concept_id, paid_copay, paid_coinsurance, paid_toward_deductible, paid_by_payer, paid_by_coordination_of_benefits,'
-            'total_out_of_pocket, total_paid, ingredient_cost, dispensing_fee, average_wholesale_price, payer_plan_period_id',
+            'drug_cost_id,drug_exposure_id,currency_concept_id,paid_copay,paid_coinsurance,paid_toward_deductible,paid_by_payer,paid_by_coordination_of_benefits,'
+            'total_out_of_pocket,total_paid,ingredient_cost,dispensing_fee,average_wholesale_price,payer_plan_period_id',
 
         'device_exposure':
-            'device_exposure_id, person_id, device_concept_id, device_exposure_start_date, device_exposure_end_date, device_type_concept_id,'
-            'unique_device_id, quantity, provider_id, visit_occurrence_id, device_source_value, device_source_concept_id',
+            'device_exposure_id,person_id,device_concept_id,device_exposure_start_date,device_exposure_end_date,device_type_concept_id,'
+            'unique_device_id,quantity,provider_id,visit_occurrence_id,device_source_value,device_source_concept_id',
 
         'device_cost':
-            'device_cost_id, device_exposure_id, currency_concept_id, paid_copay, paid_coinsurance, paid_toward_deductible,'
-            'paid_by_payer, paid_by_coordination_benefits, total_out_of_pocket, total_paid, payer_plan_period_id',
+            'device_cost_id,device_exposure_id,currency_concept_id,paid_copay,paid_coinsurance,paid_toward_deductible,'
+            'paid_by_payer,paid_by_coordination_benefits,total_out_of_pocket,total_paid,payer_plan_period_id',
 
         'measurement_occurrence':
-            'measurement_id, person_id, measurement_concept_id, measurement_date, measurement_time, measurement_type_concept_id, operator_concept_id,'
-            'value_as_number, value_as_concept_id, unit_concept_id, range_low, range_high, provider_id, visit_occurrence_id, measurement_source_value,'
-            'measurement_source_concept_id, unit_source_value, value_source_value',
+            'measurement_id,person_id,measurement_concept_id,measurement_date,measurement_time,measurement_type_concept_id,operator_concept_id,'
+            'value_as_number,value_as_concept_id,unit_concept_id,range_low,range_high,provider_id,visit_occurrence_id,measurement_source_value,'
+            'measurement_source_concept_id,unit_source_value,value_source_value',
 
         'location':
-            'location_id, address_1, address_2, city, state, zip, county, location_source_value',
+            'location_id,address_1,address_2,city,state,zip,county,location_source_value',
 
         'care_site':
-            'care_site_id, care_site_name, place_of_service_concept_id, location_id, care_site_source_value, place_of_service_source_value',
+            'care_site_id,care_site_name,place_of_service_concept_id,location_id,care_site_source_value,place_of_service_source_value',
 
         'provider':
-            'provider_id, provider_name, NPI, DEA, specialty_concept_id, care_site_id, year_of_birth, gender_concept_id, provider_source_value,'
-            'specialty_source_value, specialty_source_concept_id, gender_source_value, gender_source_concept_id',
+            'provider_id,provider_name,NPI,DEA,specialty_concept_id,care_site_id,year_of_birth,gender_concept_id,provider_source_value,'
+            'specialty_source_value,specialty_source_concept_id,gender_source_value,gender_source_concept_id',
 
         'payer_plan_period':
-            'payer_plan_period_id, person_id, payer_plan_period_start_date, payer_plan_period_end_date, payer_source_value, '
-            'plan_source_value, family_source_value',
+            'payer_plan_period_id,person_id,payer_plan_period_start_date,payer_plan_period_end_date,payer_source_value,'
+            'plan_source_value,family_source_value',
     }
 
     for token in sorted(file_control.descriptor_list(which='output')):
