@@ -9,15 +9,60 @@ with CMS data DE_1 - DE_20 and are ready to be used by the general
 public.
 
 ## Overview of Steps
-1. Install required software
-2. Download SynPUF input data
-3. Download CDMv5 Vocabulary files
-4. Setup the .env file to specify file locations
-5. Test ETL with DE\_0 CMS test data
-6. Run ETL on CMS data
-7. Load data into the database
-8. Create ERA tables
-9. Open issues and caveats with the ETL
+
+0) Optional: download the ready-to-go data and skip to step 7
+
+1) Install required software
+
+2) Download SynPUF input data
+
+3) Download CDMv5 Vocabulary files
+
+4) Setup the .env file to specify file locations
+
+5) Test ETL with DE\_0 CMS test data
+
+6) Run ETL on CMS data
+
+7) Load data into the database
+
+8) Create ERA tables
+
+9) Open issues and caveats with the ETL
+
+## 0. Optional: download the ready-to-go data and skip to step 7
+We have prepared downloadable OMOP CDMv5 .csv files of the database
+tables that were created via steps 1-7 below. The data can be retrieved from
+[this ftp folder](ftp://anonymous@ftp.ohdsi.org/synpuf). The file
+[synpuf_1.zip](ftp://anonymous@ftp.ohdsi.org/synpuf/synpuf_1.zip) (md5sum 0d11562053cec36999779cd5ae283c44)
+contains tables for the first 20th of the data (116,362 patients), and might be
+suitable for smaller-scale testing. The remaining 19 .csv.gz files represent
+the table data for all 20 parts (2,326,856 patients). Here are the direct links
+and md5sums for the files:
+
+- ``839c0df1f625bff74aba3fed07e4375f``  [care_site.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/care_site.csv.gz)
+- ``fad02821bc7369385882b0fd403580e2``  [condition_occurrence.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/condition_occurrence.csv.gz)
+- ``3419aaa30fc9ebc7a605be7c5cf654fb``  [death.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/death.csv.gz)
+- ``4a5587d391763072c988d5c264d44b69``  [device_cost.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/device_cost.csv.gz)
+- ``b60d19898934d17f0bc08e3a260e83f7``  [device_exposure.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/device_exposure.csv.gz)
+- ``37901c540feef6b8a4179d0e18438dae``  [drug_cost.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/drug_cost.csv.gz)
+- ``bbd07537a247aad7f690f71bfeabd6a6``  [drug_exposure.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/drug_exposure.csv.gz)
+- ``40036fc2d6fe24378fd55158718e8a54``  [location.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/location.csv.gz)
+- ``bbd3c060b7ba2454f5bdd8cae589ca61``  [measurement_occurrence.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/measurement_occurrence.csv.gz)
+- ``36b9525a151c95e9119c19dc96a94f5c``  [observation.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/observation.csv.gz)
+- ``1cb344499f316b929aec4f117700511a``  [observation_period.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/observation_period.csv.gz)
+- ``55b81fab86dc088443e0189ba4b70fdb``  [payer_plan_period.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/payer_plan_period.csv.gz)
+- ``3ab936bb7da41c4bc9c0dddf9daac42c``  [person.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/person.csv.gz)
+- ``5927a6509ef27e5f52c7ec1c3d86cbc9``  [procedure_cost.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/procedure_cost.csv.gz)
+- ``1812775a95484646c1fd92d515e3b516``  [procedure_occurrence.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/procedure_occurrence.csv.gz)
+- ``110c5fd05bc155eaa755e2e55ac7d0bf``  [provider.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/provider.csv.gz)
+- ``207057ec59a57edf7596b12d393b0f63``  [specimen.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/specimen.csv.gz)
+- ``d48a8ab8155736d2a38c2feb7b82eb53``  [visit_cost.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/visit_cost.csv.gz)
+- ``e1540783c7d44987cb1a7008da0e1fc0``  [visit_occurrence.csv.gz](ftp://anonymous@ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz)
+
+
+After retrieving the data you can jump to steps 7-8 to create the CDMv5 tables and load the data. 
+
 
 ## 1. Install required software
 
@@ -150,6 +195,9 @@ recommend running them sequentially from 1 through 20 to produce a
 complete ETL of the approximately 2.33M patients. If you wanted only
 1/20th of the data, you could run only sample number 1 and load the
 resulting .csv files into your database.
+
+N.B. - On average, the CMS_SynPUF_ETL_CDM_v5.py program takes approximately 45-60 minutes to process one input file (e.g. DE_1).  We executed the program
+on an Intel Xeon CPU E3-1271 v3, with 16GB of memory and it took approximately 14 hours to process all 20 DE files.
 
 ## 7. Load data into the database
 The PostgreSQL database was used for testing and we provided copies of the relevant PostgreSQL-compliant SQL code to create an OMOP CDMv5.0 database,
