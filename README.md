@@ -10,7 +10,7 @@ anticipate that this resource will be useful for researchers in
 developing OHDSI tools, as well as serve as a testbed for the analysis
 of observational health records.
 
-The processed data will be made available shortly at a location yet to be determined.
+The processed data can be retrieved from [ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf). More details can be found [here](https://github.com/OHDSI/ETL-CMS/blob/master/python_etl/README.md).
 
 This marks the first availability of a massive open CDM v5-adhering synthetic dataset. 
 
