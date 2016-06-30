@@ -10,7 +10,7 @@ public.
 
 ## Overview of Steps
 
-0) Shortcut: download the ready-to-go data and vocabulary files and skip to step 7
+0) Shortcut: download ready-to-go data, download vocabulary files (step 3), skip to step 7
 
 1) Install required software
 
@@ -30,7 +30,7 @@ public.
 
 9) Open issues and caveats with the ETL
 
-## 0. Shortcut: download the ready-to-go data and vocabulary files and skip to step 7
+## 0. Shortcut: download ready-to-go data, download vocabulary files (step 3), skip to step 7
 We have prepared downloadable OMOP CDMv5 .csv files of the database
 tables that were created via steps 1-7 below. The data can be retrieved from
 [ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf). The file
