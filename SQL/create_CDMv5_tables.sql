@@ -673,6 +673,9 @@ CREATE TABLE IF NOT EXISTS synpuf5.drug_era
     )
 ;
 
+create sequence synpuf5.drug_era_sequence;
+alter table synpuf5.drug_era alter drug_era_id set default nextval('synpuf5.drug_era_sequence');
+
 
 CREATE TABLE IF NOT EXISTS synpuf5.dose_era
     (
@@ -699,3 +702,6 @@ CREATE TABLE IF NOT EXISTS synpuf5.condition_era
      condition_occurrence_count		INTEGER			NULL
     )
 ;
+
+create sequence synpuf5.condition_era_sequence;
+alter table synpuf5.condition_era alter condition_era_id set default nextval('synpuf5.condition_era_sequence');
