@@ -1433,7 +1433,7 @@ def process_outpatient_records(beneficiary):
                 #-- Write each unique visit to visit_occurrence file.
                     if current_visit_id not in visit_id_list:
                         write_visit_occurrence(visit_occur_fd,beneficiary.person_id,
-                                                   visit_concept_id=OMOP_CONSTANTS.INPAT_VISIT_CONCEPT_ID,
+                                                   visit_concept_id=OMOP_CONSTANTS.OUTPAT_VISIT_CONCEPT_ID,
                                                    from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
                                                    visit_type_concept_id=OMOP_CONSTANTS.INPAT_VISIT_1ST_POSITION,
                                                    visit_source_value=rec.CLM_ID,
@@ -1613,7 +1613,7 @@ def process_carrier_records(beneficiary):
                 #-- Write each unique visit to visit_occurrence file.
                     if current_visit_id not in visit_id_list:
                         write_visit_occurrence(visit_occur_fd,beneficiary.person_id,
-                                                   visit_concept_id=OMOP_CONSTANTS.INPAT_VISIT_CONCEPT_ID,
+                                                   visit_concept_id=OMOP_CONSTANTS.CARRIER_CLAIMS_VISIT_CONCEPT_ID,
                                                    from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
                                                    visit_type_concept_id=OMOP_CONSTANTS.INPAT_VISIT_1ST_POSITION,
                                                    visit_source_value=rec.CLM_ID,
