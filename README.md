@@ -1,5 +1,5 @@
-# ETL-CMS version 1.0
-Release date: 6/24/2016
+# ETL-CMS version 1.0.1
+Release date: August 3, 2016
 
 This project contains the source code to convert the public
 Centers for Medicare & Medicaid Services (CMS) Data Entrepreneurs'
@@ -39,6 +39,20 @@ in the [python_etl/README.md](https://github.com/OHDSI/ETL-CMS/blob/master/pytho
 
 ### Additional Resources
 - [Partial ETL of SEER Medicare to OMOP CDMv4](https://github.com/outcomesinsights/seer_to_omop_cdmv4) - [Outcomes Insights](http://outins.com) has released their partial implementation of a SEER Medicare ETL, along with their specification document to serve as a reference for the ETLs created by this workgroup
+
+#Version history
+- 1.0.0 First complete release, implementing version 5.0.0 of the OMOP CDM
+
+- 1.0.1 Bug fixed changing only the visit_occurrence table. Formerly
+the visit_concept_id for all visits was set to the concept for an
+inpatient visit (9201). Now visits from the inpatient source data have
+visit_concept_id set to 9201, visits from outpatient source data are
+set to 9202, and visits from carrier claims source data are set to 0,
+as we cannot distinguish between inpatient and outpatient visits for
+carrier claims data.  The new visit_occurrence.csv file has been
+uploaded to the ftp site, as well as a new synpuf_1.zip file and we
+how retain versions of the ETL'd data within subdirectories at
+[ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf).
 
 #History of contributions
 
