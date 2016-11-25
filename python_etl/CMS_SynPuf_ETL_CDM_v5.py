@@ -1423,12 +1423,6 @@ def process_outpatient_records(beneficiary):
                 write_provider_record(provider_fd, npi, provider_id, care_site_id, rec.AT_PHYSN_NPI)
         #-- get visit id. Person id + CLM_FROM_DT + CLM_THRU_DT + institution number(PRVDR_NUM) make the key for a particular visit
         current_visit_id = visit_occurrence_ids[rec.DESYNPUF_ID,rec.CLM_FROM_DT,rec.CLM_THRU_DT,rec.PRVDR_NUM]
-        print "rec.ICD9_DGNS_CD_list"
-        print rec.ICD9_DGNS_CD_list
-        print "rec.ICD9_PRCDR_CD_list"
-        print rec.ICD9_PRCDR_CD_list
-        print "rec.HCPCS_CD_list"
-        print rec.HCPCS_CD_list
         for (vocab,code,type_position) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD,-1)]) +   # temp assign to -1 until we know if it is condition, procedure or observation
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_DGNS_CD_list)] +
