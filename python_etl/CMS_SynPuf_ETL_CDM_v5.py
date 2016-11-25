@@ -1260,7 +1260,7 @@ def process_inpatient_records(beneficiary):
 
         #-- get visit id. Person id + CLM_FROM_DT + CLM_THRU_DT + institution number(PRVDR_NUM) make the key for a particular visit
         current_visit_id = visit_occurrence_ids[rec.DESYNPUF_ID,rec.CLM_FROM_DT,rec.CLM_THRU_DT,rec.PRVDR_NUM]
-        for (vocab,code,type_concept_id) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
+        for (vocab,code,type_position) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD,-1)]) + # temp assign to -1 until we know if it is condition, procedure or observation
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_DGNS_CD_list)] +
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_PRCDR_CD_list)] +
@@ -1274,10 +1274,12 @@ def process_inpatient_records(beneficiary):
                         destination_file = sccd.destination_file
 
                         if destination_file == DESTINATION_FILE_PROCEDURE:
-                            if type_concept_id == -1:
+                            if type_position == -1:
                                 type_concept_id = OMOP_CONSTANTS.INPAT_PROCEDURE_PRIMARY_POSITION
-                            elif type_concept_id > 0:
-                                type_concept_id = inpat_procedure_type_concept[type_concept_id]
+                            elif type_position > 0:
+                                type_concept_id = inpat_procedure_type_concept[type_position]
+                            else:
+                                type_concept_id = 0
                             write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                        procedure_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT,
@@ -1289,10 +1291,12 @@ def process_inpatient_records(beneficiary):
                                                        visit_occurrence_id=current_visit_id)
 
                         elif destination_file == DESTINATION_FILE_CONDITION:
-                            if type_concept_id == -1:
+                            if type_position == -1:
                                 type_concept_id = OMOP_CONSTANTS.INPAT_CONDITION_PRIMARY_POSITION
-                            elif type_concept_id > 0:
-                                type_concept_id = inpat_condition_type_concept[type_concept_id]
+                            elif type_position > 0:
+                                type_concept_id = inpat_condition_type_concept[type_position]
+                            else:
+                                type_concept_id = 0
                             write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
                                                        condition_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
@@ -1419,7 +1423,13 @@ def process_outpatient_records(beneficiary):
                 write_provider_record(provider_fd, npi, provider_id, care_site_id, rec.AT_PHYSN_NPI)
         #-- get visit id. Person id + CLM_FROM_DT + CLM_THRU_DT + institution number(PRVDR_NUM) make the key for a particular visit
         current_visit_id = visit_occurrence_ids[rec.DESYNPUF_ID,rec.CLM_FROM_DT,rec.CLM_THRU_DT,rec.PRVDR_NUM]
-        for (vocab,code,type_concept_id) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
+        print "rec.ICD9_DGNS_CD_list"
+        print rec.ICD9_DGNS_CD_list
+        print "rec.ICD9_PRCDR_CD_list"
+        print rec.ICD9_PRCDR_CD_list
+        print "rec.HCPCS_CD_list"
+        print rec.HCPCS_CD_list
+        for (vocab,code,type_position) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD,-1)]) +   # temp assign to -1 until we know if it is condition, procedure or observation
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_DGNS_CD_list)] +
                                        [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_PRCDR_CD_list)] +
@@ -1432,10 +1442,12 @@ def process_outpatient_records(beneficiary):
                         destination_file = sccd.destination_file
 
                         if destination_file == DESTINATION_FILE_PROCEDURE:
-                            if type_concept_id == -1:
+                            if type_position == -1:
                                 type_concept_id = OMOP_CONSTANTS.OUTPAT_PROCEDURE_PRIMARY_POSITION
-                            elif type_concept_id > 0:
-                                type_concept_id = outpat_procedure_type_concept[type_concept_id]
+                            elif type_position > 0:
+                                type_concept_id = outpat_procedure_type_concept[type_position]
+                            else:
+                                type_concept_id = 0
                             write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                        procedure_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT,
@@ -1447,10 +1459,12 @@ def process_outpatient_records(beneficiary):
                                                        visit_occurrence_id=current_visit_id)
 
                         elif destination_file == DESTINATION_FILE_CONDITION:
-                            if type_concept_id == -1:
+                            if type_position == -1:
                                 type_concept_id = OMOP_CONSTANTS.OUTPAT_CONDITION_PRIMARY_POSITION
-                            elif type_concept_id > 0:
-                                type_concept_id = outpat_condition_type_concept[type_concept_id]
+                            elif type_position > 0:
+                                type_concept_id = outpat_condition_type_concept[type_position]
+                            else:
+                                type_concept_id = 0
                             write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
                                                        condition_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
