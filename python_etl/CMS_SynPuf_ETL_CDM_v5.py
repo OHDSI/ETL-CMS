@@ -226,6 +226,60 @@ domain_destination_file_list = {
     'Visit'                 : DESTINATION_FILE_VISIT
     }
 
+inpat_procedure_type_concept = {
+    1  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_1,
+    2  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_2,
+    3  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_3,
+    4  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_4,
+    5  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_5,
+    6  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_6,
+    7  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_7,
+    8  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_8,
+    9  : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_9,
+    10 : OMOP_CONSTANTS.INPAT_PROCEDURE_POSITION_10
+}
+
+inpat_condition_type_concept = {
+    1  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_1,
+    2  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_2,
+    3  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_3,
+    4  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_4,
+    5  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_5,
+    6  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_6,
+    7  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_7,
+    8  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_8,
+    9  : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_9,
+    10 : OMOP_CONSTANTS.INPAT_CONDITION_POSITION_10
+}
+
+outpat_procedure_type_concept = {
+    1  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_1,
+    2  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_2,
+    3  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_3,
+    4  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_4,
+    5  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_5,
+    6  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_6,
+    7  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_7,
+    8  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_8,
+    9  : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_9,
+    10 : OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_10
+}
+
+outpat_condition_type_concept = {
+    1  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_1,
+    2  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_2,
+    3  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_3,
+    4  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_4,
+    5  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_5,
+    6  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_6,
+    7  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_7,
+    8  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_8,
+    9  : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_9,
+    10 : OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_10
+}
+
+
+
 # -----------------------------------
 # get timestamp
 # -----------------------------------
@@ -1206,9 +1260,11 @@ def process_inpatient_records(beneficiary):
 
         #-- get visit id. Person id + CLM_FROM_DT + CLM_THRU_DT + institution number(PRVDR_NUM) make the key for a particular visit
         current_visit_id = visit_occurrence_ids[rec.DESYNPUF_ID,rec.CLM_FROM_DT,rec.CLM_THRU_DT,rec.PRVDR_NUM]
-        for (vocab,code) in ([(OMOP_CONSTANTS.ICD_9_VOCAB_ID, x) for x in rec.ICD9_DGNS_CD_list] +
-                             [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,x) for x in rec.ICD9_PRCDR_CD_list] +
-                             [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID, x) for x in rec.HCPCS_CD_list]):
+        for (vocab,code,type_concept_id) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD,-1)]) + # temp assign to -1 until we know if it is condition, procedure or observation
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_DGNS_CD_list)] +
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_PRCDR_CD_list)] +
+                                       [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,val,0) for idx,val in enumerate(rec.HCPCS_CD_list)]):
 
             if rec.CLM_FROM_DT != '':
                 if (vocab,code) in source_code_concept_dict:
@@ -1218,10 +1274,14 @@ def process_inpatient_records(beneficiary):
                         destination_file = sccd.destination_file
 
                         if destination_file == DESTINATION_FILE_PROCEDURE:
+                            if type_concept_id == -1:
+                                type_concept_id = OMOP_CONSTANTS.INPAT_PROCEDURE_PRIMARY_POSITION
+                            elif type_concept_id > 0:
+                                type_concept_id = inpat_procedure_type_concept[type_concept_id]
                             write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                        procedure_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT,
-                                                       procedure_type_concept_id=OMOP_CONSTANTS.INPAT_PROCEDURE_1ST_POSITION,
+                                                       procedure_type_concept_id=type_concept_id,
                                                        procedure_source_value=code,
                                                        procedure_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -1229,10 +1289,14 @@ def process_inpatient_records(beneficiary):
                                                        visit_occurrence_id=current_visit_id)
 
                         elif destination_file == DESTINATION_FILE_CONDITION:
+                            if type_concept_id == -1:
+                                type_concept_id = OMOP_CONSTANTS.INPAT_CONDITION_PRIMARY_POSITION
+                            elif type_concept_id > 0:
+                                type_concept_id = inpat_condition_type_concept[type_concept_id]
                             write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
                                                        condition_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
-                                                       condition_type_concept_id=OMOP_CONSTANTS.INPAT_CONDITION_1ST_POSITION,
+                                                       condition_type_concept_id=type_concept_id,
                                                        condition_source_value=code,
                                                        condition_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -1355,10 +1419,11 @@ def process_outpatient_records(beneficiary):
                 write_provider_record(provider_fd, npi, provider_id, care_site_id, rec.AT_PHYSN_NPI)
         #-- get visit id. Person id + CLM_FROM_DT + CLM_THRU_DT + institution number(PRVDR_NUM) make the key for a particular visit
         current_visit_id = visit_occurrence_ids[rec.DESYNPUF_ID,rec.CLM_FROM_DT,rec.CLM_THRU_DT,rec.PRVDR_NUM]
-        for (vocab,code) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD)]) +
-                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,x) for x in rec.ICD9_DGNS_CD_list] +
-                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,x) for x in rec.ICD9_PRCDR_CD_list] +
-                                       [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,x) for x in rec.HCPCS_CD_list]):
+        for (vocab,code,type_concept_id) in ( ([] if rec.ADMTNG_ICD9_DGNS_CD == "" else 
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,rec.ADMTNG_ICD9_DGNS_CD,-1)]) +   # temp assign to -1 until we know if it is condition, procedure or observation
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_DGNS_CD_list)] +
+                                       [(OMOP_CONSTANTS.ICD_9_VOCAB_ID,val,idx+1) for idx,val in enumerate(rec.ICD9_PRCDR_CD_list)] +
+                                       [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID,val,0) for idx,val in enumerate(rec.HCPCS_CD_list)]):
             if rec.CLM_FROM_DT != '':
                 if (vocab,code) in source_code_concept_dict:
                     for sccd in source_code_concept_dict[vocab,code]:
@@ -1367,10 +1432,14 @@ def process_outpatient_records(beneficiary):
                         destination_file = sccd.destination_file
 
                         if destination_file == DESTINATION_FILE_PROCEDURE:
+                            if type_concept_id == -1:
+                                type_concept_id = OMOP_CONSTANTS.OUTPAT_PROCEDURE_PRIMARY_POSITION
+                            elif type_concept_id > 0:
+                                type_concept_id = outpat_procedure_type_concept[type_concept_id]
                             write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                        procedure_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT,
-                                                       procedure_type_concept_id=OMOP_CONSTANTS.OUTPAT_PROCEDURE_1ST_POSITION,
+                                                       procedure_type_concept_id=type_concept_id,
                                                        procedure_source_value=code,
                                                        procedure_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -1378,10 +1447,14 @@ def process_outpatient_records(beneficiary):
                                                        visit_occurrence_id=current_visit_id)
 
                         elif destination_file == DESTINATION_FILE_CONDITION:
+                            if type_concept_id == -1:
+                                type_concept_id = OMOP_CONSTANTS.OUTPAT_CONDITION_PRIMARY_POSITION
+                            elif type_concept_id > 0:
+                                type_concept_id = outpat_condition_type_concept[type_concept_id]
                             write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
                                                        condition_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
-                                                       condition_type_concept_id=OMOP_CONSTANTS.OUTPAT_CONDITION_1ST_POSITION,
+                                                       condition_type_concept_id=type_concept_id,
                                                        condition_source_value=code,
                                                        condition_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -1507,7 +1580,6 @@ def process_carrier_records(beneficiary):
         for (vocab,code) in ([(OMOP_CONSTANTS.ICD_9_VOCAB_ID,x) for x in rec.ICD9_DGNS_CD_list] +
                              [(OMOP_CONSTANTS.HCPCS_VOCABULARY_ID, x) for x in rec.HCPCS_CD_list] +
                              [(OMOP_CONSTANTS.ICD_9_VOCAB_ID, x) for x in  rec.LINE_ICD9_DGNS_CD_list]):
-
             if rec.CLM_FROM_DT != '':
                 if (vocab,code) in source_code_concept_dict:
                     for sccd in source_code_concept_dict[vocab,code]:
@@ -1519,7 +1591,7 @@ def process_carrier_records(beneficiary):
                             write_procedure_occurrence(proc_occur_fd, beneficiary.person_id,
                                                        procedure_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT,
-                                                       procedure_type_concept_id=OMOP_CONSTANTS.OUTPAT_PROCEDURE_1ST_POSITION,
+                                                       procedure_type_concept_id=OMOP_CONSTANTS.OUTPAT_PROCEDURE_POSITION_1,
                                                        procedure_source_value=code,
                                                        procedure_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -1561,7 +1633,7 @@ def process_carrier_records(beneficiary):
                             write_condition_occurrence(cond_occur_fd,beneficiary.person_id,
                                                        condition_concept_id=target_concept_id,
                                                        from_date=rec.CLM_FROM_DT, thru_date=rec.CLM_THRU_DT,
-                                                       condition_type_concept_id=OMOP_CONSTANTS.OUTPAT_CONDITION_1ST_POSITION,
+                                                       condition_type_concept_id=OMOP_CONSTANTS.OUTPAT_CONDITION_POSITION_1,
                                                        condition_source_value=code,
                                                        condition_source_concept_id=source_concept_id,
                                                        provider_id=provider_id,
@@ -2011,6 +2083,11 @@ if __name__ == '__main__':
     log_stats('BASE_SYNPUF_INPUT_DIRECTORY     =' + BASE_SYNPUF_INPUT_DIRECTORY)
     log_stats('BASE_OUTPUT_DIRECTORY           =' + BASE_OUTPUT_DIRECTORY)
     log_stats('BASE_ETL_CONTROL_DIRECTORY      =' + BASE_ETL_CONTROL_DIRECTORY)
+
+    # fix some strings
+    BASE_SYNPUF_INPUT_DIRECTORY=BASE_SYNPUF_INPUT_DIRECTORY.translate(None, '\'')
+    BASE_OUTPUT_DIRECTORY=BASE_OUTPUT_DIRECTORY.translate(None, '\'')
+    SYNPUF_DIR_FORMAT=SYNPUF_DIR_FORMAT.translate(None, '\'')
 
     file_control = FileControl(BASE_SYNPUF_INPUT_DIRECTORY, BASE_OUTPUT_DIRECTORY, SYNPUF_DIR_FORMAT, current_sample_number)
     file_control.delete_all_output()
