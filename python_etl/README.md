@@ -166,13 +166,13 @@ files need to be deleted if you want to restart numbering.
 
 ## 5. Test ETL with DE_0 CMS test data
 We have provided the directory named DE_0 inside the
-python_etl/test_files directory. Copy this directory to your input
+python_etl/test_data directory. Copy this directory to your input
 directory containing the DE_X directories. This directory has sample
 input corresponding to 2 persons which can be used to check the
 desired output. It is based on the hand-coded samples.
 
 Run the ETL process on the files in this directory with:  
-``python CMS_SynPUF_ETL_CDM_v5.py 0``  
+``python CMS_SynPuf_ETL_CDM_v5.py 0``  
 and check for the output generated in the BASE\_OUTPUT\_DIRECTORY
 directory.  A .csv file should be generated for each of the CDM v5 tables,
 suitable for comparing against the hand-coded outputs.  Note at this
@@ -183,9 +183,9 @@ Clean out the control files in BASE\_ETL\_CONTROL\_DIRECTORY before running the 
 
 To process any of the DE_1 to DE_20 folders, run:
 
-- ``python CMS_SynPUF_ETL_CDM_v5.py <sample number>``
+- ``python CMS_SynPuf_ETL_CDM_v5.py <sample number>``
     - Where ``<sample number>`` is the number of one of the samples you downloaded from CMS
-    - e.g. ``python CMS_SynPUF_ETL_CDM_v5.py 4`` will run the ETL on the SynPUF data in the DE_4 directory
+    - e.g. ``python CMS_SynPuf_ETL_CDM_v5.py 4`` will run the ETL on the SynPUF data in the DE_4 directory
     - The resulting output files should be suitable for bulk loading into a CDM v5 database.
 
 The runs cannot be done in parallel because counters and unique
@@ -196,7 +196,7 @@ complete ETL of the approximately 2.33M patients. If you wanted only
 1/20th of the data, you could run only sample number 1 and load the
 resulting .csv files into your database.
 
-N.B. - On average, the CMS_SynPUF_ETL_CDM_v5.py program takes approximately 45-60 minutes to process one input file (e.g. DE_1).  We executed the program
+N.B. - On average, the CMS_SynPuf_ETL_CDM_v5.py program takes approximately 45-60 minutes to process one input file (e.g. DE_1).  We executed the program
 on an Intel Xeon CPU E3-1271 v3, with 16GB of memory and it took approximately 14 hours to process all 20 DE files.
 
 ## 7. Load data into the database
