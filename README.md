@@ -39,6 +39,7 @@ in the [python_etl/README.md](https://github.com/OHDSI/ETL-CMS/blob/master/pytho
 
 ### Additional Resources
 - [Partial ETL of SEER Medicare to OMOP CDMv4](https://github.com/outcomesinsights/seer_to_omop_cdmv4) - [Outcomes Insights](http://outins.com) has released their partial implementation of a SEER Medicare ETL, along with their specification document to serve as a reference for the ETLs created by this workgroup
+ - The [OHDSI Medicare ETL SynPUF.pdf](https://github.com/OHDSI/ETL-CMS/blob/master/OHDSI%20Medicare%20ETL%20SynPuf.pdf) provides a light overview of the differences between SynPUF and other Medicare datasets, such as SEER Medicare and Medicare LDS.  This presentation was presented to the OHDSI CMS ETL workgroup on February 2015 by Jennifer Duryea at [Outcomes Insights](http://outins.com).
 
 #Version history
 - 1.0.0 First complete release, implementing version 5.0.0 of the OMOP CDM
