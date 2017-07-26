@@ -39,7 +39,7 @@ suitable for smaller-scale testing. The remaining 19 .csv.gz files represent
 the table data for all 20 parts (2,326,856 patients). Here are the direct links
 and md5sums for the files:
 
-- ``0d11562053cec36999779cd5ae283c44``  [ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip](ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip)
+- ``da0e310e7313e7b4894d1b1a15aee674``  [ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip](ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip)
 - ``839c0df1f625bff74aba3fed07e4375f``  [ftp://ftp.ohdsi.org/synpuf/care_site.csv.gz](ftp://ftp.ohdsi.org/synpuf/care_site.csv.gz)
 - ``fad02821bc7369385882b0fd403580e2``  [ftp://ftp.ohdsi.org/synpuf/condition_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/condition_occurrence.csv.gz)
 - ``3419aaa30fc9ebc7a605be7c5cf654fb``  [ftp://ftp.ohdsi.org/synpuf/death.csv.gz](ftp://ftp.ohdsi.org/synpuf/death.csv.gz)
@@ -58,7 +58,7 @@ and md5sums for the files:
 - ``110c5fd05bc155eaa755e2e55ac7d0bf``  [ftp://ftp.ohdsi.org/synpuf/provider.csv.gz](ftp://ftp.ohdsi.org/synpuf/provider.csv.gz)
 - ``207057ec59a57edf7596b12d393b0f63``  [ftp://ftp.ohdsi.org/synpuf/specimen.csv.gz](ftp://ftp.ohdsi.org/synpuf/specimen.csv.gz)
 - ``d48a8ab8155736d2a38c2feb7b82eb53``  [ftp://ftp.ohdsi.org/synpuf/visit_cost.csv.gz](ftp://ftp.ohdsi.org/synpuf/visit_cost.csv.gz)
-- ``e1540783c7d44987cb1a7008da0e1fc0``  [ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz)
+- ``c1529ea8b4e4e092d0cdd2600ea61c75``  [ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz)
 
 
 After retrieving the data you can perform step 3 to obtain the vocabulary files, then skip to steps 7-8 to create the CDMv5 tables and load the data. 
