@@ -1,9 +1,9 @@
-# ETL-CMS version 1.0.1
-Release date: August 3, 2016
+# ETL-CMS version 2.0.0
+Release date: May 7, 2018
 
 This project contains the source code to convert the public
 Centers for Medicare & Medicaid Services (CMS) Data Entrepreneurs'
-[Synthetic Public Use File](<https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html>) (DE-SynPUF) to .csv files suitable for loading into an OMOP Common Data Model v5 database.
+[Synthetic Public Use File](<https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html>) (DE-SynPUF) to .csv files suitable for loading into an OMOP Common Data Model v5.2 database.
 
 The DE-SynPUF dataset contains 2.33 million synthetic patients, and we
 anticipate that this resource will be useful for researchers in
@@ -54,6 +54,8 @@ carrier claims data.  The new visit_occurrence.csv file has been
 uploaded to the ftp site, as well as a new synpuf_1.zip file and we
 how retain versions of the ETL'd data within subdirectories at
 [ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf).
+
+- 2.0.0 Leverating the 1.0.1 builder however transforming it to the CDM v5.2. format.  Many thanks to Anthony Molinaro (@AnthonyMolinaro) for writing the translation script, Lee Evans (@leeevans) for updating the OHDSI infrastructure with the updated copy.
 
 #History of contributions
 
