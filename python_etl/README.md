@@ -10,7 +10,7 @@ public.
 
 ## Overview of Steps
 
-0) Shortcut: download ready-to-go data, download vocabulary files (step 3), skip to step 7
+0) Shortcut: download ready-to-go data
 
 1) Install required software
 
@@ -30,7 +30,20 @@ public.
 
 9) Open issues and caveats with the ETL
 
-## 0. Shortcut: download ready-to-go data, download vocabulary files (step 3), skip to step 7
+## 0. Shortcut: download ready-to-go data
+
+### CDM V5.2
+We have prepared a downloadable OMOP CDMv5.2 version.  The data can be retrieved from [Google Drive](https://drive.google.com/file/d/1xWmuVqlIaUsY08OgrKIt8WAsfaq_iCrG/view?usp=sharing).  The file is called synpuf_100k.tar.gz. It is approximately 3 GB in size. It contains synthetic v5.2 CDM data files for 100,000 persons (i.e. a sample of the 2M patients in SYNPUF). The .gz files in this file will need to be extracted and decompressed after download. The decompressed files have no file suffixes but they are comma delimited text files. There are no header records in the files. The CDM vocabulary version is "v5.0 05-NOV-17".
+ 
+Here is an example PostgreSQL psql client copy command to load the concept file into the concept table in a schema called 'cdm'. 
+ 
+\copy cdm.concept from '/download_directory_path/concept' null as '\\000' delimiter ','
+
+The CDM V5.2 was built by using the original V5.0 BUILDER found in this GitHub and then running transform scripts found [here](https://github.com/OHDSI/ETL-CMS/tree/updateSynpufVersion/hand_conversion/V5.0_TO_V5.2_SCRIPT).
+
+You are completed after this step.  The other steps are for the older version below or if you want to run yourself.
+
+### CDM V5.0 (INITIAL VERSION) download ready-to-go data, download vocabulary files (step 3), skip to step 7
 We have prepared downloadable OMOP CDMv5 .csv files of the database
 tables that were created via steps 1-7 below. The data can be retrieved from
 [ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf). The file
