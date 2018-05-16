@@ -1,11 +1,15 @@
 import os,os.path,sys,datetime,subprocess,string,urllib,zipfile
 from time import strftime
 
+if sys.version_info[0] >= 3: 
+    import urllib.request as ur
+
 #------------------------
 #  2015-02-05  D. O'Hara - requires wget
 #  2015-02-06  RSD - requires Python 3.2+, takes command line arguments
 #  2015-02-18  RSD - Fix combining CSVs, don't re-download existing files
 #  2015-12-10  Christophe Lambert -- converted script to python 2.7, and cleaned up command line arguments.
+#  2018-05-16  Mustafa Ascha - Added python3 compatibility for urllib import, and an 'all' option to download all files
 #------------------------
 
 # This script will download and unzip SynPUF files from CMS.
@@ -23,7 +27,7 @@ from time import strftime
 
 
 # Read output directory from the command line
-if len(sys.argv) < 3:
+if len(sys.argv) < 3 and not 'all' in sys.argv:
     print("usage: get_synpuf_files.py path/to/output/directory <SAMPLE> ... [SAMPLE]")
     print("where each SAMPLE is a number from 1 to 20, representing the 20 parts of the CMS data")
     quit();
@@ -36,7 +40,11 @@ for i in range(2,len(sys.argv)):
             raise ValueError('Invalid sample number')
         SAMPLE_RANGE.append(x)
     except ValueError:
-        print("Invalid sample number: " + sys.argv[i] + ". Must be in range 1..20")
+        if 'all' in sys.argv[i]: 
+            for number in [x + 1 for x in range(20)]:
+                SAMPLE_RANGE.append(number)
+            break
+        print("Invalid sample number: " + sys.argv[i] + ". Must be 'all' or in range 1..20")
         quit()
 
 
@@ -101,7 +109,10 @@ def download_synpuf_files(sample_directory, sample_number):
             continue
         else:
             print('..downloading -> ', file_url)
-            urllib.urlretrieve(file_url, filename=file_local)
+            if sys.version_info[0] >= 3:  
+                ur.urlretrieve(file_url, filename=file_local)
+            else: 
+                urllib.urlretrieve(file_url, filename=file_local)
             zipfile.ZipFile(file_local).extractall(download_directory)
     #---------------------------------------------------------------------------------------
     # some files in the zipped folder have Copy.csv in their names. The following code will
