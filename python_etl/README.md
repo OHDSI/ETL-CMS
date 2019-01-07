@@ -160,7 +160,8 @@ SNOMED, ICD9CM, ICD9Proc, CPT4, HCPCS, LOINC, RxNorm, and NDC.
 
 - Unzip the resulting .zip file to a directory.
 - Because CPT4 vocabulary is not part of CONCEPT.csv file, one must download it with the provided cpt4.jar program via:
-``java -jar cpt4.jar``, which will append the CPT4 concepts to the CONCEPT.csv file.
+``java -Dumls-user='XXXX' -Dumls-password='XXXX' -jar cpt4.jar 5``, which will append the CPT4 concepts to the CONCEPT.csv file. You will need to pass in your UMLS credentials in order for this command to work. 
+- Note: This command works with Java version 10 or below. 
 
 ## 4. Setup the .env file to specify file locations
 Edit the variables in the .env file which specify various directories used during the ETL process.
