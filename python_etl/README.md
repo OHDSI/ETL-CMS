@@ -30,6 +30,8 @@ public.
 
 9) Open issues and caveats with the ETL
 
+Further instructions on how to set up the Postgres database can be found [here](postgres_instructions.md).
+
 ## 0. Shortcut: download ready-to-go data
 
 ### CDM V5.2
