@@ -11,25 +11,25 @@ Further details on how to install Postgres can be found [here](http://www.postgr
 
 You can donwload prepared OMOD CDM files from `ftp://ftp.ohdsi.org/synpuf`. For smaller-scale testing, you can simply download `synpuf_1.zip` which contains tables a small portion of the dataset (116,362 patients). `synpuf_1.zip` contains a total of 19 files:
 
-- care_site_1.csv
-- condition_occurence_1.csv
-- death_1.csv
-- device_cost_1.csv
-- device_exposure_1.csv
-- drug_cost_1.csv
-- drug_exposure_1.csv
-- location_1.csv
-- measurement_occurence_1.csv
+- care\_site\_1.csv
+- condition_occurence\_1.csv
+- death\_1.csv
+- device\_cost\_1.csv
+- device_exposure\_1.csv
+- drug\_cost\_1.csv
+- drug_exposure\_1.csv
+- location\_1.csv
+- measurement\_occurence\_1.csv
 - observation_1.csv
-- observation_period_1.csv
-- payer_plan_period_1.csv
-- person_1.csv
-- procedure_cost_1.csv
-- procedure_occurence_1.csv
-- provider_1.csv
-- specimen_1.csv
-- visit_cost_1.csv
-- visit_occurence_1.csv
+- observation\_period\_1.csv
+- payer\_plan\_period\_1.csv
+- person\_1.csv
+- procedure\_cost\_1.csv
+- procedure\_occurence\_1.csv
+- provider\_1.csv
+- specimen\_1.csv
+- visit\_cost\_1.csv
+- visit\_occurence\_1.csv
 
 Place these files in a local directory. 
 
@@ -102,13 +102,13 @@ We need to load two seaprate datasets into the empty tables. This involves two s
 The first dataset is the standardized vocabulary dataset, which was downloaded in Step 3 of the ETL instructions. Inside the `standardized_vocab` directory, you should have the following files:
 
 - CONCEPT.csv
-- CONCEPT_ANCESTOR.csv
-- CONCEPT_CLASS.csv
-- CONCEPT_CPT4.csv
-- CONCEPT_RELATIONSHIP.csv
-- CONCEPT_SYNONYM.csv
+- CONCEPT\_ANCESTOR.csv
+- CONCEPT\_CLASS.csv
+- CONCEPT\_CPT4.csv
+- CONCEPT\_RELATIONSHIP.csv
+- CONCEPT\_SYNONYM.csv
 - DOMAIN.csv
-- DRUG_STRENGTH.csv
+- DRUG\_STRENGTH.csv
 - RELATIONSHIP.csv
 - VOCABULARY.csv
 
@@ -140,6 +140,19 @@ psql 'dbname=ohdsi user=username options=--search_path=synpuf5'
 -f load_CDMv5_synpuf.sql -v data_dir={rel path to synpuf_1}
 ```
 
-Note: If you're using the smaller synpuf dataset, you will need to make sure that `load_CDMv5_synpuf.sql` is copying the correct CSV files. `synpuf_1` has `_1` appended at the end of each file's name. You will most likely need to make this change in the SQL script as well.
+Note: If you're using the smaller synpuf_1 dataset, you will need to make sure that `load_CDMv5_synpuf.sql` is copying the correct CSV files. `synpuf_1` has `_1` appended at the end of each file's name, which is not reflected in the original version of the SQL script.
 
-Also, if you're loading the entire dataset from `ftp://ftp.ohdsi.org/synpuf`, you can load in the `gz` files as is with the `load_CDMv5_synpuf_gz.sql` script.
+Also, if you're loading the entire dataset from [ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf), you can load in the `gz` files as is with the `load_CDMv5_synpuf_gz.sql` script.
+
+
+### Step 7: Add constratins and indices
+
+```
+# add constraints
+psql 'dbname=ohdsi user=username options=--search_path=synpuf5' 
+-f create_CDMv5_constraints.sql
+
+# add indices
+psql 'dbname=ohdsi user=username options=--search_path=synpuf5' 
+-f create_CDMv5_indices.sql
+```
