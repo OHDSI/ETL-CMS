@@ -223,7 +223,9 @@ domain_destination_file_list = {
     'Obs/Procedure'         : DESTINATION_FILE_PROCEDURE,
     'Observation'           : DESTINATION_FILE_OBSERVATION,
     'Procedure'             : DESTINATION_FILE_PROCEDURE,
-    'Visit'                 : DESTINATION_FILE_VISIT
+    'Visit'                 : DESTINATION_FILE_VISIT,
+	'Place of Service'      : DESTINATION_FILE_VISIT,
+	'Meas Value'            : DESTINATION_FILE_MEASUREMENT
     }
 
 # -----------------------------------
@@ -461,22 +463,28 @@ def build_maps():
                         recs_checked += 1
 
                         if  not concept_relationship_dict.has_key(concept_id):
-                            destination_file = domain_destination_file_list[domain_id]
-                            if( vocabulary_id == OMOP_CONSTANTS.ICD_9_VOCAB_ID):
-                                status = "No map from ICD9 code, or code invalid for " + concept_id
-                                recs_skipped += 1
-                            if( vocabulary_id == OMOP_CONSTANTS.HCPCS_VOCABULARY_ID):
-                                status = "No self map from OMOP (HCPCS/CPT4) to OMOP (HCPCS/CPT4) or code invalid for " + concept_id
-                                recs_skipped += 1
-                            if( vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID):
-                                status = "No map from OMOP (NCD) to OMOP (RxNorm) or code invalid for " + concept_id
-                                recs_skipped += 1
-                            source_code_concept_dict[vocabulary_id,concept_code] = [SourceCodeConcept(concept_code, concept_id, "0", destination_file)]
+							if  not domain_destination_file_list.has_key(domain_id):
+								status = "No destination defined for domain " + domain_id + " of concept " + concept_id
+							else:
+								destination_file = domain_destination_file_list[domain_id]
+								if( vocabulary_id == OMOP_CONSTANTS.ICD_9_VOCAB_ID):
+									status = "No map from ICD9 code, or code invalid for " + concept_id
+									recs_skipped += 1
+								if( vocabulary_id == OMOP_CONSTANTS.HCPCS_VOCABULARY_ID):
+									status = "No self map from OMOP (HCPCS/CPT4) to OMOP (HCPCS/CPT4) or code invalid for " + concept_id
+									recs_skipped += 1
+								if( vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID):
+									status = "No map from OMOP (NCD) to OMOP (RxNorm) or code invalid for " + concept_id
+									recs_skipped += 1
+								source_code_concept_dict[vocabulary_id,concept_code] = [SourceCodeConcept(concept_code, concept_id, "0", destination_file)]
                         else:
                             source_code_concept_dict[vocabulary_id,concept_code] = []
                             for concept in concept_relationship_dict[concept_id]:
-                                destination_file = domain_destination_file_list[domain_dict[concept]]
-                                source_code_concept_dict[vocabulary_id,concept_code].append(SourceCodeConcept(concept_code, concept_id, concept, destination_file))
+								if  not domain_destination_file_list.has_key(domain_dict[concept]):
+									status = "No destination defined for domain " + domain_dict[concept] + " of concept " + concept_id
+								else:
+									destination_file = domain_destination_file_list[domain_dict[concept]]
+									source_code_concept_dict[vocabulary_id,concept_code].append(SourceCodeConcept(concept_code, concept_id, concept, destination_file))
 
                 if status != '':
                     fout_log.write(status + ': \t')
