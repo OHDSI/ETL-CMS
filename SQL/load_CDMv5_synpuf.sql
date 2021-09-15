@@ -14,23 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ********************************************************************************/
+-- Change to the directory containing the data files
+\cd :data_dir
 
-\COPY synpuf5.CARE_SITE FROM '/home/lambert/CMS/cdm5/upload/care_site.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.CONDITION_OCCURRENCE FROM '/home/lambert/CMS/cdm5/upload/condition_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.DEATH FROM '/home/lambert/CMS/cdm5/upload/death.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.DEVICE_COST FROM '/home/lambert/CMS/cdm5/upload/device_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.DRUG_COST FROM '/home/lambert/CMS/cdm5/upload/drug_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.DRUG_EXPOSURE FROM '/home/lambert/CMS/cdm5/upload/drug_exposure.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.DEVICE_EXPOSURE FROM '/home/lambert/CMS/cdm5/upload/device_exposure.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.LOCATION FROM '/home/lambert/CMS/cdm5/upload/location.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.MEASUREMENT FROM '/home/lambert/CMS/cdm5/upload/measurement_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.OBSERVATION FROM '/home/lambert/CMS/cdm5/upload/observation.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.PERSON FROM '/home/lambert/CMS/cdm5/upload/person.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.PROCEDURE_OCCURRENCE FROM '/home/lambert/CMS/cdm5/upload/procedure_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.PROCEDURE_COST FROM '/home/lambert/CMS/cdm5/upload/procedure_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.PROVIDER FROM '/home/lambert/CMS/cdm5/upload/provider.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.SPECIMEN FROM '/home/lambert/CMS/cdm5/upload/specimen.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.VISIT_COST FROM '/home/lambert/CMS/cdm5/upload/visit_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.VISIT_OCCURRENCE FROM '/home/lambert/CMS/cdm5/upload/visit_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.OBSERVATION_PERIOD FROM '/home/lambert/CMS/cdm5/upload/observation_period.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.PAYER_PLAN_PERIOD FROM '/home/lambert/CMS/cdm5/upload/payer_plan_period.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+-- Run the following command:
+-- psql 'dbname={ohdsi} user={username} options=--search_path={schema_name}' -f load_CDMv5_synpuf.sql -v data_dir={dir_goes_here}
+
+
+\COPY CARE_SITE FROM 'care_site.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY CONDITION_OCCURRENCE FROM 'condition_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY DEATH FROM 'death.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY DEVICE_COST FROM 'device_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY DRUG_COST FROM 'drug_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY DRUG_EXPOSURE FROM 'drug_exposure.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY DEVICE_EXPOSURE FROM 'device_exposure.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY LOCATION FROM 'location.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY MEASUREMENT FROM 'measurement_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY OBSERVATION FROM 'observation.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY PERSON FROM 'person.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY PROCEDURE_OCCURRENCE FROM 'procedure_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY PROCEDURE_COST FROM 'procedure_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY PROVIDER FROM 'provider.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY SPECIMEN FROM 'specimen.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY VISIT_COST FROM 'visit_cost.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY VISIT_OCCURRENCE FROM 'visit_occurrence.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY OBSERVATION_PERIOD FROM 'observation_period.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';
+\COPY PAYER_PLAN_PERIOD FROM 'payer_plan_period.csv' WITH DELIMITER E',' CSV HEADER QUOTE E'\b';

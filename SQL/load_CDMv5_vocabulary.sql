@@ -14,14 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ********************************************************************************/
+-- Change to the directory containing the data files
+\cd :data_dir
 
-\COPY synpuf5.concept FROM '/home/lambert/Dropbox/Research/vocab_download_v5/CONCEPT.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.concept_ancestor FROM '/home/lambert/Dropbox/Research/vocab_download_v5/CONCEPT_ANCESTOR.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.concept_class FROM '/home/lambert/Dropbox/Research/vocab_download_v5/CONCEPT_CLASS.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.concept_relationship FROM '/home/lambert/Dropbox/Research/vocab_download_v5/CONCEPT_RELATIONSHIP.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-DELETE FROM synpuf5.concept_relationship WHERE invalid_reason is not null;
-\COPY synpuf5.concept_synonym FROM '/home/lambert/Dropbox/Research/vocab_download_v5/CONCEPT_SYNONYM.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.domain FROM '/home/lambert/Dropbox/Research/vocab_download_v5/DOMAIN.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.relationship FROM '/home/lambert/Dropbox/Research/vocab_download_v5/RELATIONSHIP.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.vocabulary FROM '/home/lambert/Dropbox/Research/vocab_download_v5/VOCABULARY.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
-\COPY synpuf5.drug_strength FROM '/home/lambert/Dropbox/Research/vocab_download_v5/DRUG_STRENGTH.csv' WITH DELIMITER E'	' CSV HEADER QUOTE E'\b';
+-- Run the following command:
+-- psql 'dbname={ohdsi} user={username} options=--search_path={schema_name}' -f load_CDMv5_vocabulary.sql -v data_dir={dir_goes_here}
+
+-- Test that data load was successful:
+-- psql 'dbname={ohdsi} user={username} options=--search_path={schema_name}'
+-- SELECT * FROM concept_ancestor LIMIT 10;
+
+\COPY concept FROM 'CONCEPT.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY concept_ancestor FROM 'CONCEPT_ANCESTOR.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY concept_class FROM 'CONCEPT_CLASS.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY concept_relationship FROM 'CONCEPT_RELATIONSHIP.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+DELETE FROM concept_relationship WHERE invalid_reason is not null;
+\COPY concept_synonym FROM 'CONCEPT_SYNONYM.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY domain FROM 'DOMAIN.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY relationship FROM 'RELATIONSHIP.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY vocabulary FROM 'VOCABULARY.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
+\COPY drug_strength FROM 'DRUG_STRENGTH.csv' WITH DELIMITER E'\t' CSV HEADER QUOTE E'\b';
