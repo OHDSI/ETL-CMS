@@ -63,7 +63,7 @@ class OMOP_CONSTANTS(object):
 
 # --------------------
 # Record layout for the CONCEPT_RELATIONSHIP.csv file
-# It is used to map: OMOP (NCD) -> OMOP (RXNORM)
+# It is used to map: OMOP (NDC) -> OMOP (RXNORM)
 # It is used to map: OMOP (ICD9) -> OMOP (SNOMED)
 # It is used to map: OMOP (HCPCS) -> OMOP (CPT4)
 # --------------------
