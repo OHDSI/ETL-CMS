@@ -289,7 +289,7 @@ c) Only two ethnicity concepts (38003563, 38003564) are available.  38003563: Hi
 d) When a concept id has no mapping in the CONCEPT_RELATIONSHIP table:
 - If there is no mapping from OMOP (ICD9) to OMOP (SNOMED) for an ICD9 concept id, target_concept_id for such ICD9 concept id is populated with '0' .
 - If there is no self-mapping from OMOP (HCPCS/CPT4) to OMOP (HCPCS/CPT4) for an HCPCS/CPT4 concept id, target_concept_id for such HCPCS/CPT4 concept id is populated with '0' .
-- If there is no mapping from OMOP (NDC) to OMOP (RxNorm) for an NDC concept id, target_concept_id for such NDC concept id is populated with '0'.
+- If there is no mapping from OMOP (NCD) to OMOP (RxNorm) for an NCD concept id, target_concept_id for such NCD concept id is populated with '0'.
 
 e) The source data contains concepts that appear in the CONCEPT.csv file but do not have relationship mappings to target vocabularies. For these, we create records with concept_id 0 and include the source_concept_id in the record. Achilles Heel will give warnings about these concepts for the Condition, Observation, Procedure, and Drug tables as follows. If condition_concept_id or observation_concept_id or procedure_concept_id or drug_concept_id is '0' respectively:
 - WARNING: 400-Number of persons with at least one condition occurrence, by condition_concept_id; data with unmapped concepts
