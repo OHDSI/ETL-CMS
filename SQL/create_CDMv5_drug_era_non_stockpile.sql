@@ -34,9 +34,9 @@ ctePreDrugTarget(drug_exposure_id, person_id, ingredient_concept_id, drug_exposu
 			drug_exposure_start_date + INTERVAL '1 day'
 			---Add 1 day to the drug_exposure_start_date since there is no end_date or INTERVAL for the days_supply
 		) AS drug_exposure_end_date
-	FROM synpuf5.drug_exposure d
-		JOIN synpuf5.concept_ancestor ca ON ca.descendant_concept_id = d.drug_concept_id
-		JOIN synpuf5.concept c ON ca.ancestor_concept_id = c.concept_id
+	FROM drug_exposure d
+		JOIN concept_ancestor ca ON ca.descendant_concept_id = d.drug_concept_id
+		JOIN concept c ON ca.ancestor_concept_id = c.concept_id
 		WHERE c.vocabulary_id = 'RxNorm' ---8 selects RxNorm from the vocabulary_id
 		AND c.concept_class_id = 'Ingredient'
 		AND d.drug_concept_id != 0 ---Our unmapped drug_concept_id's are set to 0, so we don't want different drugs wrapped up in the same era
@@ -158,7 +158,7 @@ GROUP BY
 	, drug_exposure_count
 	, days_exposed
 )
-INSERT INTO synpuf5.drug_era(person_id, drug_concept_id, drug_era_start_date, drug_era_end_date, drug_exposure_count, gap_days)
+INSERT INTO drug_era(person_id, drug_concept_id, drug_era_start_date, drug_era_end_date, drug_exposure_count, gap_days)
 SELECT
 	person_id
 	, drug_concept_id
