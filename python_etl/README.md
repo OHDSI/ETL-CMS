@@ -215,6 +215,14 @@ resulting .csv files into your database.
 N.B. - On average, the CMS_SynPuf_ETL_CDM_v5.py program takes approximately 45-60 minutes to process one input file (e.g. DE_1).  We executed the program
 on an Intel Xeon CPU E3-1271 v3, with 16GB of memory and it took approximately 14 hours to process all 20 DE files.
 
+Once each individual file has been processed, they all need to be concatenated into a single CSV. The provided ``merge.py`` can accomplish this:
+
+```
+python merge.py
+```
+
+All the paths are taking from the ``.env`` file that was set up previously.
+
 ## 7. Load data into the database
 The PostgreSQL database was used for testing and we provided copies of the relevant PostgreSQL-compliant SQL code to create an OMOP CDMv5.0 database,
 and load the data into PostgreSQL. As the common data model changes to 5.0.1 and beyond, this ETL would have to be updated,
