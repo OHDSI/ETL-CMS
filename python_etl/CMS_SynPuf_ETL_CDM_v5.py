@@ -474,7 +474,7 @@ def build_maps():
 									status = "No self map from OMOP (HCPCS/CPT4) to OMOP (HCPCS/CPT4) or code invalid for " + concept_id
 									recs_skipped += 1
 								if( vocabulary_id == OMOP_CONSTANTS.NDC_VOCABULARY_ID):
-									status = "No map from OMOP (NCD) to OMOP (RxNorm) or code invalid for " + concept_id
+									status = "No map from OMOP (NDC) to OMOP (RxNorm) or code invalid for " + concept_id
 									recs_skipped += 1
 								source_code_concept_dict[vocabulary_id,concept_code] = [SourceCodeConcept(concept_code, concept_id, "0", destination_file)]
                         else:
