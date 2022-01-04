@@ -10,27 +10,27 @@ public.
 
 ## Overview of Steps
 
-0) Shortcut: download ready-to-go data
+* [Shortcut: download ready-to-go data](#Download-ready-to-go-data)
 
-[Install Required Software](#Install-required-software)
+1. [Install Required Software](#Install-required-software)
 
-2) Download SynPUF input data
+1. [Download SynPUF input data](#Download-SynPUF-input-data)
 
-3) Download CDMv5 Vocabulary files
+1. [Download CDMv5 Vocabulary files](#Download-CDMv5-Vocabulary-Files)
 
-4) Setup the .env file to specify file locations
+1. [Setup the environment file](#Setup-the-environment-file)
 
-5) Test ETL with DE\_0 CMS test data
+1. [Test ETL with CMS test data](#Test-ETL-with-CMS-test-data)
 
-6) Run ETL on CMS data
+1. [Run ETL on CMS data](#Run-ETL-on-CMS-data)
 
-7) Load data into the database
+1. [Load data into the database](#Load-data-into-the-database)
 
-8) Open issues and caveats with the ETL
+1. [Open issues and caveats with the ETL](#Open-issues-and-caveats-with-the-ETL)
 
 Further instructions on how to set up the Postgres database can be found [here](postgres_instructions.md).
 
-## 0. Shortcut: download ready-to-go data
+## Download ready-to-go data
 
 ### CDM V5.2
 We have prepared a downloadable OMOP CDMv5.2 version.  The data can be retrieved from [Google Drive](https://drive.google.com/file/d/1xWmuVqlIaUsY08OgrKIt8WAsfaq_iCrG/view?usp=sharing).  The file is called synpuf_100k.tar.gz. It is approximately 3 GB in size. It contains synthetic v5.2 CDM data files for 100,000 persons (i.e. a sample of the 2M patients in SYNPUF). The .gz files in this file will need to be extracted and decompressed after download. The decompressed files have no file suffixes but they are comma delimited text files. There are no header records in the files. The CDM vocabulary version is "v5.0 05-NOV-17".
@@ -112,7 +112,7 @@ Then to install python-dotenv, run the following command within the python\_etl 
 ``pip install -r requirements.txt``
 
 
-## 2. Download SynPUF input data
+## Download SynPUF input data
 The SynPUF data is divided into 20 parts (8 files per part), and the files for each part should be saved in respective directories DE_1 through DE_20.
 They can either be downloaded with a python utility script or manually, described in the next two subsections.
 
@@ -152,7 +152,7 @@ to 'DE1_0_2008_to_2010_Carrier_Claims_Sample_11A.zip'.
 Also, some zipped files have '.Copy.csv' file inside them. Rename those files from 'Copy.csv' to '.csv' after unzipping the zipped files.
 If you use the download script, you don't have to do all of these manual steps. The script will take care of all these.
 
-## 3. Download CDMv5 Vocabulary files
+## Download CDMv5 Vocabulary files
 Download vocabulary files from <http://www.ohdsi.org/web/athena/>, ensuring that you select at minimum, the following vocabularies:
 SNOMED, ICD9CM, ICD9Proc, CPT4, HCPCS, LOINC, RxNorm, and NDC.
 
@@ -161,7 +161,7 @@ SNOMED, ICD9CM, ICD9Proc, CPT4, HCPCS, LOINC, RxNorm, and NDC.
 ``java -Dumls-user='XXXX' -Dumls-password='XXXX' -jar cpt4.jar 5``, which will append the CPT4 concepts to the CONCEPT.csv file. You will need to pass in your UMLS credentials in order for this command to work. 
 - Note: This command works with Java version 10 or below. 
 
-## 4. Setup the .env file to specify file locations
+## Setup the environment file
 Edit the variables in the .env file which specify various directories used during the ETL process.
 Example .env files are provided for Windows (.env.example.windows) and unix (.env.example.unix) runs,
 differing only in path name constructs.
@@ -178,7 +178,7 @@ and physician institutions over the 20 parts so that the seperate DE\_1 through
 DE\_20 directories can be processed sequentially. These
 files need to be deleted if you want to restart numbering.
 
-## 5. Test ETL with DE_0 CMS test data
+## Test ETL with CMS test data
 We have provided the directory named DE_0 inside the
 python_etl/test_data directory. Copy this directory to your input
 directory containing the DE_X directories. This directory has sample
@@ -193,7 +193,7 @@ suitable for comparing against the hand-coded outputs.  Note at this
 time, all of the tables have been implemented, but some might be empty (e.g visit_cost and device_cost) due to lack of data.
 Clean out the control files in BASE\_ETL\_CONTROL\_DIRECTORY before running the next step.
 
-## 6. Run ETL on CMS data
+## Run ETL on CMS data
 
 To process any of the DE_1 to DE_20 folders, run:
 
@@ -221,7 +221,7 @@ python merge.py
 
 All the paths are taking from the ``.env`` file that was set up previously.
 
-## 7. Load data into the database
+## Load data into the database
 The PostgreSQL database was used for testing and we provided copies of the relevant PostgreSQL-compliant SQL code to create an OMOP CDMv5.0 database,
 and load the data into PostgreSQL. As the common data model changes to 5.0.1 and beyond, this ETL would have to be updated,
 and new copies of the relevant SQL code be retrieved from the [CommonDataModel repository](https://github.com/OHDSI/CommonDataModel), where
@@ -294,7 +294,7 @@ Do not chain all the SQL files together in a batch script, as you need to review
 N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
 
 
-## 8. Open issues and caveats with the ETL
+## Open issues and caveats with the ETL
 a) As per OHDSI documentation for the [observation](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:observation) and [measurement](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:measurement) tables, the fields 'value_as_string', 'value_as_number', and 'value_as_concept_id' in both tables are not mandatory, but Achilles Heels gives an error when all of these 3 fields are NULL. Achilles Heels requires one of these fields
     should have non-NULL value. So, to fix this error, field 'value_as_concept_id' has been populated with '0' in both the measurement and observation output .csv files.
 
