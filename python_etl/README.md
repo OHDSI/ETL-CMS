@@ -231,9 +231,13 @@ SQL code is maintained for PostgreSQL, Oracle, and SQL Server database construct
 and would have to be adapted slightly for other databases.
 
 To create tables in a PostgreSQL database or to load the .csv files created by ETL programs to a PostgreSQL database,
-the queries can be executed in pgadmin III or a PostgreSQL psql terminal.
+the queries can be executed in pgadmin or a PostgreSQL psql terminal.
  - to run the queries in pgadmin III, open the sql file in pgadmin III and click on the run button.
  - to run the queries in PostgreSQL terminal (psql), run ``psql``, then type the command ''\i XXXX.sql'' where XXXX.sql is an sql file. Alternately you can run an SQL file from the command line via ``psql -f XXXX.sql``.
+
+### Prepare the database
+
+These steps can all be executed directly via psql or within pgAdmin:
 
 1. Login to the PostgreSQL database and create a new database. e.g. ``CREATE DATABASE ohdsi``
 
@@ -241,29 +245,44 @@ the queries can be executed in pgadmin III or a PostgreSQL psql terminal.
 
 1. Create a separate empty schema for ACHILLES results e.g. ``CREATE SCHEMA results``
 
-1. Download  [create_CDMv5_tables.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_tables.sql) and replace the schema name synpuf5 with the new schema created in step (b). Execute the file via the PostgreSQL psql terminal or pgadmin III. This file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema.
+### Load and process the data
 
-1. If `create_CDMv5_tables.sql` executed successfully, all the tables will have been created under the new schema you used, and are empty.
- To load the vocabulary data into the tables, download [load_CDMv5_vocabulary.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_vocabulary.sql) and do the following:
+Code for loading and processing is contained in the `SQL` directory found at the root of this repository. Each file should be executed at the command line in the following manner (also found in `SQL/README.md` if you need a reminder):
 
-  - Replace the schema name synpuf5 with the schema you created previously
-  - Change BASE_OMOP_INPUT_DIRECTORY to the directory where you store your vocabulary files that you want to load into PostgreSQL.
-  - Execute the queries in the modified file. These queries will copy the vocabulary data from csv files to the PostgreSQL database.
+```
+psql 'dbname={dbname} user={username} options=--search_path={schema_name}' -f {filename.sql} -v data_dir={data_directory}
+```
 
-1. To load the data from DE_1 to DE_20 into tables, download [load_CDMv5_synpuf.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_synpuf.sql) and then:
-  - Replace the schema name synpuf5 with the schema you created in in step (b)
-  - Replace the location of the input csv files that you want to load to PostgreSQL.
-  - Execute the queries in the modified file. These queries will import the ETL .csv data from DE_1 through DE_20 to the PostgreSQL database.
+The arguments `dbname`, `username`, and `schema_name` will be the same for the entire process and should match the names used when preparing the database above. For brevity, the connection string will be replaced with `CONNECTION_STRING` in the example commands below. You may consider exporting this as an environment variable.
 
-1. Create constraints: If `load_CDMv5_synpuf.sql` executed successfully, records were inserted into tables and now primary and foreign keys can be assigned to all tables. Download
-    the sql file [create_CDMv5_constraints](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_constraints.sql) then:
-    - update the schema name with the schema you created previously
-    - Execute the queries present in the downloaded file. Make sure you have loaded all of  your data before running this step. If you add the constraints before loading the data, it will slow down
-    the load process because the database needs to check the constraints before adding any record to the database.
+The `data_dir` argument varies depending on the script. Below, we'll use the variable names used in the `python_etl/.env` file, though you'll need to replace them manually (the scripts do not currently read from that file).
 
-1. Though the database will create indexes for primary keys, but the queries will take minutes to execute if the search is not based on the primary keys.
-    Additional indexes based on foreign keys and other frequently used fields need to added to the tables to improve the query execution time. Download
-    the sql file [create_CDMv5_indices](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_indices.sql) and update the schema with the schema you created in step (b). Execute the queries in the modified file. This concludes the database creation, loading, and optimization.
+Do not chain all the SQL files together in a batch script, as you need to review the logs for errors and warnings before proceeding to the next step.
+
+1. The `create_CDMv5_tables.sql` file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema. Run it like so:
+```
+psql 'CONNECTION_STRING' -f create_CDMv5_tables.sql
+```
+
+1. The `load_CDMv5_vocabulary.sql` file loads the vocabulary data into the database:
+```
+psql 'CONNECTION_STRING' -f load_CDMv5_vocabulary.sql -v data_dir='BASE_OMOP_INPUT_DIRECTORY'
+```
+
+1. The `load_CDMv5_synpuf.sql` file will load the data from DE_1 to DE_20 into tables. This uses the consolidated `csv` files from the `merge.py` script above. The DE-specific files are no longer referenced.
+```
+psql 'CONNECTION_STRING' -f load_CDMv5_synpuf.sql -v data_dir='BASE_OUTPUT_DIRECTORY'
+```
+
+1. The `create_CDMv5_constraints.sql` file will assign primary and foreign keys to all tables for more efficient querying. Make sure you have loaded all of  your data before running this step. If you add the constraints before loading the data, it will slow down the load process because the database needs to check the constraints before adding any record to the database:
+```
+psql 'CONNECTION_STRING' -f create_CDMv5_constraints.sql
+```
+
+1. The `create_CDMv5_indices.sql` file will add additional indexes based on foreign keys and other frequently used fields to improve the query execution time:
+```
+psql 'CONNECTION_STRING' -f create_CDMv5_indices.sql
+```
 
 ## 8. Create ERA tables
   Once you are done with all the steps mentioned in section (7), you can generate data for drug_era and condition_era tables as follows:
