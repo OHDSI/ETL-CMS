@@ -12,7 +12,7 @@ public.
 
 0) Shortcut: download ready-to-go data
 
-1) Install required software
+[Install Required Software](#Install-required-software)
 
 2) Download SynPUF input data
 
@@ -77,7 +77,7 @@ and md5sums for the files:
 After retrieving the data you can perform step 3 to obtain the vocabulary files, then skip to steps 7-8 to create the CDMv5 tables and load the data. 
 
 
-## 1. Install required software
+## Install required software
 
 The ETL process requires Python 2.7 with the python-dotenv package.
 
