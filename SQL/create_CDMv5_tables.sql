@@ -207,7 +207,20 @@ CREATE TABLE IF NOT EXISTS cdm_source
     )
 ;
 
-
+INSERT INTO cdm_source (
+       cdm_source_name,
+       cdm_source_abbreviation,
+       source_description,
+       cdm_release_date,
+       cdm_version) VALUES (
+       'Medicare Claims Synthetic Public Use Files (SynPUFs)',
+       'synPuf',
+       'Medicare Claims Synthetic Public Use Files (SynPUFs) were created to allow interested parties to gain familiarity using Medicare claims data while protecting beneficiary privacy. These files are intended to promote development of software and applications that utilize files in this format, train researchers on the use and complexities of Centers for Medicare and Medicaid Services (CMS) claims, and support safe data mining innovations. The SynPUFs were created by combining randomized information from multiple unique beneficiaries and changing variable values. This randomization and combining of beneficiary information ensures privacy of health information.',
+       CURRENT_DATE,
+       '5.2.2'
+       );
+       
+       
 
 
 

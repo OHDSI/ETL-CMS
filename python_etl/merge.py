@@ -1,7 +1,12 @@
 # This script will merge the 20 csv files for each type into a single csv per type
-# It should be placed in the directory where the converted files are.
 # It uses python 2.7
 #
+
+import os, dotenv
+dotenv.load_dotenv(".env")
+BASE_OUTPUT_DIRECTORY           = os.environ['BASE_OUTPUT_DIRECTORY']
+
+
 files = {
    'care_site.csv'               : 'care_site_',
    'condition_occurrence.csv'    : 'condition_occurrence_',
@@ -26,14 +31,14 @@ files = {
    
 for key, value in files.iteritems():
     print "Processing: " + key
-    fout=open(key,"w")
+    fout=open(os.path.join(BASE_OUTPUT_DIRECTORY, key),"w")
     # first file:
     fstring = value + "1.csv"
-    for line in open(fstring):
+    for line in open(os.path.join(BASE_OUTPUT_DIRECTORY, fstring)):
         fout.write(line)
     # now the rest:    
     for num in range(2,20):
-        f = open(value+str(num)+".csv")
+        f = open(os.path.join(BASE_OUTPUT_DIRECTORY, value+str(num)+".csv"))
         f.next() # skip the header
         for line in f:
             fout.write(line)
