@@ -26,9 +26,7 @@ public.
 
 7) Load data into the database
 
-8) Create ERA tables
-
-9) Open issues and caveats with the ETL
+8) Open issues and caveats with the ETL
 
 Further instructions on how to set up the Postgres database can be found [here](postgres_instructions.md).
 
@@ -260,42 +258,43 @@ The `data_dir` argument varies depending on the script. Below, we'll use the var
 Do not chain all the SQL files together in a batch script, as you need to review the logs for errors and warnings before proceeding to the next step.
 
 1. The `create_CDMv5_tables.sql` file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema. Run it like so:
-```
-psql 'CONNECTION_STRING' -f create_CDMv5_tables.sql
-```
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_tables.sql
 
 1. The `load_CDMv5_vocabulary.sql` file loads the vocabulary data into the database:
-```
-psql 'CONNECTION_STRING' -f load_CDMv5_vocabulary.sql -v data_dir='BASE_OMOP_INPUT_DIRECTORY'
-```
+        
+        psql 'CONNECTION_STRING' -f load_CDMv5_vocabulary.sql -v data_dir='BASE_OMOP_INPUT_DIRECTORY'
 
 1. The `load_CDMv5_synpuf.sql` file will load the data from DE_1 to DE_20 into tables. This uses the consolidated `csv` files from the `merge.py` script above. The DE-specific files are no longer referenced.
-```
-psql 'CONNECTION_STRING' -f load_CDMv5_synpuf.sql -v data_dir='BASE_OUTPUT_DIRECTORY'
-```
+
+        psql 'CONNECTION_STRING' -f load_CDMv5_synpuf.sql -v data_dir='BASE_OUTPUT_DIRECTORY'
 
 1. The `create_CDMv5_constraints.sql` file will assign primary and foreign keys to all tables for more efficient querying. Make sure you have loaded all of  your data before running this step. If you add the constraints before loading the data, it will slow down the load process because the database needs to check the constraints before adding any record to the database:
-```
-psql 'CONNECTION_STRING' -f create_CDMv5_constraints.sql
-```
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_constraints.sql
+
 
 1. The `create_CDMv5_indices.sql` file will add additional indexes based on foreign keys and other frequently used fields to improve the query execution time:
-```
-psql 'CONNECTION_STRING' -f create_CDMv5_indices.sql
-```
 
-## 8. Create ERA tables
-  Once you are done with all the steps mentioned in section (7), you can generate data for drug_era and condition_era tables as follows:
-
-  a) condition_era: Download the sql file [create_CDMv5_condition_era.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_condition_era.sql) and update the schema with the
-    schema you created in step (7b). Execute the queries present in the modified file.
-
-  b) drug_era: Download sql file [create_CDMv5 _drug_era_non_stockpile.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_drug_era_non_stockpile.sql) and update the schema with the
-    schema you created in step (7b). Execute the queries present in the modified file.
-  N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
+        psql 'CONNECTION_STRING' -f create_CDMv5_indices.sql
 
 
-## 9. Open issues and caveats with the ETL
+### Create ERA tables
+  Once you are done loading the data and creating indices, you can generate data for drug_era and condition_era tables as follows:
+
+* condition_era: 
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_condition_era.sql
+
+
+* drug_era: 
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_drug_era_non_stockpile.sql
+        
+N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
+
+
+## 8. Open issues and caveats with the ETL
 a) As per OHDSI documentation for the [observation](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:observation) and [measurement](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:measurement) tables, the fields 'value_as_string', 'value_as_number', and 'value_as_concept_id' in both tables are not mandatory, but Achilles Heels gives an error when all of these 3 fields are NULL. Achilles Heels requires one of these fields
     should have non-NULL value. So, to fix this error, field 'value_as_concept_id' has been populated with '0' in both the measurement and observation output .csv files.
 
