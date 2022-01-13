@@ -10,9 +10,7 @@ public.
 
 ## Overview of Steps
 
-* [Shortcut: download ready-to-go data](#Download-ready-to-go-data)
-
-1. [Install Required Software](#Install-required-software)
+1) Install required software
 
 1. [Download SynPUF input data](#Download-SynPUF-input-data)
 
@@ -29,52 +27,6 @@ public.
 1. [Open issues and caveats with the ETL](#Open-issues-and-caveats-with-the-ETL)
 
 Further instructions on how to set up the Postgres database can be found [here](postgres_instructions.md).
-
-## Download ready-to-go data
-
-### CDM V5.2
-We have prepared a downloadable OMOP CDMv5.2 version.  The data can be retrieved from [Google Drive](https://drive.google.com/file/d/1xWmuVqlIaUsY08OgrKIt8WAsfaq_iCrG/view?usp=sharing).  The file is called synpuf_100k.tar.gz. It is approximately 3 GB in size. It contains synthetic v5.2 CDM data files for 100,000 persons (i.e. a sample of the 2M patients in SYNPUF). The .gz files in this file will need to be extracted and decompressed after download. The decompressed files have no file suffixes but they are comma delimited text files. There are no header records in the files. The CDM vocabulary version is "v5.0 05-NOV-17".
- 
-Here is an example PostgreSQL psql client copy command to load the concept file into the concept table in a schema called 'cdm'. 
- 
-\copy cdm.concept from '/download_directory_path/concept' null as '\\000' delimiter ','
-
-The CDM V5.2 was built by using the original V5.0 BUILDER found in this GitHub and then running transform scripts found [here](https://github.com/OHDSI/ETL-CMS/tree/updateSynpufVersion/hand_conversion/V5.0_TO_V5.2_SCRIPT).
-
-You are completed after this step.  The other steps are for the older version below or if you want to run yourself.
-
-### CDM V5.0 (INITIAL VERSION) download ready-to-go data, download vocabulary files (step 3), skip to step 7
-We have prepared downloadable OMOP CDMv5 .csv files of the database
-tables that were created via steps 1-7 below. The data can be retrieved from
-[ftp://ftp.ohdsi.org/synpuf](ftp://ftp.ohdsi.org/synpuf). The file
-[synpuf_1.zip](ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip) contains tables for the first 20th of the data (116,362 patients), and might be
-suitable for smaller-scale testing. The remaining 19 .csv.gz files represent
-the table data for all 20 parts (2,326,856 patients). Here are the direct links
-and md5sums for the files:
-
-- ``da0e310e7313e7b4894d1b1a15aee674``  [ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip](ftp://ftp.ohdsi.org/synpuf/synpuf_1.zip)
-- ``839c0df1f625bff74aba3fed07e4375f``  [ftp://ftp.ohdsi.org/synpuf/care_site.csv.gz](ftp://ftp.ohdsi.org/synpuf/care_site.csv.gz)
-- ``fad02821bc7369385882b0fd403580e2``  [ftp://ftp.ohdsi.org/synpuf/condition_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/condition_occurrence.csv.gz)
-- ``3419aaa30fc9ebc7a605be7c5cf654fb``  [ftp://ftp.ohdsi.org/synpuf/death.csv.gz](ftp://ftp.ohdsi.org/synpuf/death.csv.gz)
-- ``4a5587d391763072c988d5c264d44b69``  [ftp://ftp.ohdsi.org/synpuf/device_cost.csv.gz](ftp://ftp.ohdsi.org/synpuf/device_cost.csv.gz)
-- ``b60d19898934d17f0bc08e3a260e83f7``  [ftp://ftp.ohdsi.org/synpuf/device_exposure.csv.gz](ftp://ftp.ohdsi.org/synpuf/device_exposure.csv.gz)
-- ``37901c540feef6b8a4179d0e18438dae``  [ftp://ftp.ohdsi.org/synpuf/drug_cost.csv.gz](ftp://ftp.ohdsi.org/synpuf/drug_cost.csv.gz)
-- ``bbd07537a247aad7f690f71bfeabd6a6``  [ftp://ftp.ohdsi.org/synpuf/drug_exposure.csv.gz](ftp://ftp.ohdsi.org/synpuf/drug_exposure.csv.gz)
-- ``40036fc2d6fe24378fd55158718e8a54``  [ftp://ftp.ohdsi.org/synpuf/location.csv.gz](ftp://ftp.ohdsi.org/synpuf/location.csv.gz)
-- ``bbd3c060b7ba2454f5bdd8cae589ca61``  [ftp://ftp.ohdsi.org/synpuf/measurement_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/measurement_occurrence.csv.gz)
-- ``36b9525a151c95e9119c19dc96a94f5c``  [ftp://ftp.ohdsi.org/synpuf/observation.csv.gz](ftp://ftp.ohdsi.org/synpuf/observation.csv.gz)
-- ``1cb344499f316b929aec4f117700511a``  [ftp://ftp.ohdsi.org/synpuf/observation_period.csv.gz](ftp://ftp.ohdsi.org/synpuf/observation_period.csv.gz)
-- ``55b81fab86dc088443e0189ba4b70fdb``  [ftp://ftp.ohdsi.org/synpuf/payer_plan_period.csv.gz](ftp://ftp.ohdsi.org/synpuf/payer_plan_period.csv.gz)
-- ``3ab936bb7da41c4bc9c0dddf9daac42c``  [ftp://ftp.ohdsi.org/synpuf/person.csv.gz](ftp://ftp.ohdsi.org/synpuf/person.csv.gz)
-- ``5927a6509ef27e5f52c7ec1c3d86cbc9``  [ftp://ftp.ohdsi.org/synpuf/procedure_cost.csv.gz](ftp://ftp.ohdsi.org/synpuf/procedure_cost.csv.gz)
-- ``1812775a95484646c1fd92d515e3b516``  [ftp://ftp.ohdsi.org/synpuf/procedure_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/procedure_occurrence.csv.gz)
-- ``110c5fd05bc155eaa755e2e55ac7d0bf``  [ftp://ftp.ohdsi.org/synpuf/provider.csv.gz](ftp://ftp.ohdsi.org/synpuf/provider.csv.gz)
-- ``207057ec59a57edf7596b12d393b0f63``  [ftp://ftp.ohdsi.org/synpuf/specimen.csv.gz](ftp://ftp.ohdsi.org/synpuf/specimen.csv.gz)
-- ``d48a8ab8155736d2a38c2feb7b82eb53``  [ftp://ftp.ohdsi.org/synpuf/visit_cost.csv.gz](ftp://ftp.ohdsi.org/synpuf/visit_cost.csv.gz)
-- ``c1529ea8b4e4e092d0cdd2600ea61c75``  [ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz](ftp://ftp.ohdsi.org/synpuf/visit_occurrence.csv.gz)
-
-
-After retrieving the data you can perform step 3 to obtain the vocabulary files, then skip to steps 7-8 to create the CDMv5 tables and load the data. 
 
 
 ## Install required software
