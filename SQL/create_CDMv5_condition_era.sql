@@ -28,7 +28,7 @@
 --------------------------------------------------------------------------------------------------------------
 /**/
 
-TRUNCATE synpuf5.condition_era;
+TRUNCATE condition_era;
 
 WITH cteConditionTarget (condition_occurrence_id, person_id, condition_concept_id, condition_start_date, condition_end_date) AS
 (
@@ -38,7 +38,7 @@ WITH cteConditionTarget (condition_occurrence_id, person_id, condition_concept_i
 		, co.condition_concept_id
 		, co.condition_start_date
 		, COALESCE(NULLIF(co.condition_end_date,NULL), condition_start_date + INTERVAL '1 day') AS condition_end_date
-	FROM synpuf5.condition_occurrence co
+	FROM condition_occurrence co
 	/* Depending on the needs of your data, you can put more filters on to your code. We assign 0 to our unmapped condition_concept_id's,
 	 * and since we don't want different conditions put in the same era, we put in the filter below.
  	 */
@@ -105,7 +105,7 @@ GROUP BY
 --------------------------------------------------------------------------------------------------------------
 
 
-INSERT INTO synpuf5.condition_era (person_id, condition_concept_id, condition_era_start_date, condition_era_end_date, condition_occurrence_count)
+INSERT INTO condition_era (person_id, condition_concept_id, condition_era_start_date, condition_era_end_date, condition_occurrence_count)
 SELECT 
 	person_id
 	, condition_concept_id

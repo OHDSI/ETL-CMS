@@ -96,7 +96,8 @@ def download_synpuf_files(sample_directory, sample_number):
             file_url = 'http://{0}/{1}'.format(base_url, sp_file)
         elif base_url == url_www_cms_gov:
             file_url = 'https://{0}/{1}'.format(base_url, sp_file)
-
+        if sp_file == 'DE1_0_2010_Beneficiary_Summary_File_Sample_1.zip':           # website has a typo. this is a workaround
+            file_url = 'https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/SynPUFs/Downloads/DE1_0_2010_Beneficiary_Summary_File_Sample_20.zip'
         if '.csv.zip' in sp_file:                   #downloaded file name shouldn't have .csv.zip.
             sp_file = sp_file.replace('.csv.zip', '.zip')
 
