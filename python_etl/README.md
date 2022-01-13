@@ -12,26 +12,24 @@ public.
 
 1) Install required software
 
-2) Download SynPUF input data
+1. [Download SynPUF input data](#Download-SynPUF-input-data)
 
-3) Download CDMv5 Vocabulary files
+1. [Download CDMv5 Vocabulary files](#Download-CDMv5-Vocabulary-Files)
 
-4) Setup the .env file to specify file locations
+1. [Setup the environment file](#Setup-the-environment-file)
 
-5) Test ETL with DE\_0 CMS test data
+1. [Test ETL with CMS test data](#Test-ETL-with-CMS-test-data)
 
-6) Run ETL on CMS data
+1. [Run ETL on CMS data](#Run-ETL-on-CMS-data)
 
-7) Load data into the database
+1. [Load data into the database](#Load-data-into-the-database)
 
-8) Create ERA tables
-
-9) Open issues and caveats with the ETL
+1. [Open issues and caveats with the ETL](#Open-issues-and-caveats-with-the-ETL)
 
 Further instructions on how to set up the Postgres database can be found [here](postgres_instructions.md).
 
 
-## 1. Install required software
+## Install required software
 
 The ETL process requires Python 2.7 with the python-dotenv package.
 
@@ -66,7 +64,7 @@ Then to install python-dotenv, run the following command within the python\_etl 
 ``pip install -r requirements.txt``
 
 
-## 2. Download SynPUF input data
+## Download SynPUF input data
 The SynPUF data is divided into 20 parts (8 files per part), and the files for each part should be saved in respective directories DE_1 through DE_20.
 They can either be downloaded with a python utility script or manually, described in the next two subsections.
 
@@ -106,7 +104,7 @@ to 'DE1_0_2008_to_2010_Carrier_Claims_Sample_11A.zip'.
 Also, some zipped files have '.Copy.csv' file inside them. Rename those files from 'Copy.csv' to '.csv' after unzipping the zipped files.
 If you use the download script, you don't have to do all of these manual steps. The script will take care of all these.
 
-## 3. Download CDMv5 Vocabulary files
+## Download CDMv5 Vocabulary files
 Download vocabulary files from <http://www.ohdsi.org/web/athena/>, ensuring that you select at minimum, the following vocabularies:
 SNOMED, ICD9CM, ICD9Proc, CPT4, HCPCS, LOINC, RxNorm, and NDC.
 
@@ -115,7 +113,7 @@ SNOMED, ICD9CM, ICD9Proc, CPT4, HCPCS, LOINC, RxNorm, and NDC.
 ``java -Dumls-user='XXXX' -Dumls-password='XXXX' -jar cpt4.jar 5``, which will append the CPT4 concepts to the CONCEPT.csv file. You will need to pass in your UMLS credentials in order for this command to work. 
 - Note: This command works with Java version 10 or below. 
 
-## 4. Setup the .env file to specify file locations
+## Setup the environment file
 Edit the variables in the .env file which specify various directories used during the ETL process.
 Example .env files are provided for Windows (.env.example.windows) and unix (.env.example.unix) runs,
 differing only in path name constructs.
@@ -132,7 +130,7 @@ and physician institutions over the 20 parts so that the seperate DE\_1 through
 DE\_20 directories can be processed sequentially. These
 files need to be deleted if you want to restart numbering.
 
-## 5. Test ETL with DE_0 CMS test data
+## Test ETL with CMS test data
 We have provided the directory named DE_0 inside the
 python_etl/test_data directory. Copy this directory to your input
 directory containing the DE_X directories. This directory has sample
@@ -147,7 +145,7 @@ suitable for comparing against the hand-coded outputs.  Note at this
 time, all of the tables have been implemented, but some might be empty (e.g visit_cost and device_cost) due to lack of data.
 Clean out the control files in BASE\_ETL\_CONTROL\_DIRECTORY before running the next step.
 
-## 6. Run ETL on CMS data
+## Run ETL on CMS data
 
 To process any of the DE_1 to DE_20 folders, run:
 
@@ -175,7 +173,7 @@ python merge.py
 
 All the paths are taking from the ``.env`` file that was set up previously.
 
-## 7. Load data into the database
+## Load data into the database
 The PostgreSQL database was used for testing and we provided copies of the relevant PostgreSQL-compliant SQL code to create an OMOP CDMv5.0 database,
 and load the data into PostgreSQL. As the common data model changes to 5.0.1 and beyond, this ETL would have to be updated,
 and new copies of the relevant SQL code be retrieved from the [CommonDataModel repository](https://github.com/OHDSI/CommonDataModel), where
@@ -183,53 +181,72 @@ SQL code is maintained for PostgreSQL, Oracle, and SQL Server database construct
 and would have to be adapted slightly for other databases.
 
 To create tables in a PostgreSQL database or to load the .csv files created by ETL programs to a PostgreSQL database,
-the queries can be executed in pgadmin III or a PostgreSQL psql terminal.
+the queries can be executed in pgadmin or a PostgreSQL psql terminal.
  - to run the queries in pgadmin III, open the sql file in pgadmin III and click on the run button.
  - to run the queries in PostgreSQL terminal (psql), run ``psql``, then type the command ''\i XXXX.sql'' where XXXX.sql is an sql file. Alternately you can run an SQL file from the command line via ``psql -f XXXX.sql``.
 
-a) Login to the PostgreSQL database and create a new database. e.g. ``CREATE DATABASE ohdsi``
+### Prepare the database
 
-b) If you don't want to use the public schema, create a new empty schema.  e.g. ``CREATE SCHEMA synpuf5``
+These steps can all be executed directly via psql or within pgAdmin:
 
-c) Create a separate empty schema for ACHILLES results e.g. ``CREATE SCHEMA results``
+1. Login to the PostgreSQL database and create a new database. e.g. ``CREATE DATABASE ohdsi``
 
-d) Download  [create_CDMv5_tables.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_tables.sql) and replace the schema name synpuf5 with the new schema created in step (b). Execute the file via the PostgreSQL psql terminal or pgadmin III. This file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema.
+1. If you don't want to use the public schema, create a new empty schema.  e.g. ``CREATE SCHEMA synpuf5``
 
-e) If the queries in step (d) executed successfully, all the tables will have been created under the new schema you used, and are empty.
+1. Create a separate empty schema for ACHILLES results e.g. ``CREATE SCHEMA results``
 
- To load the vocabulary data into the tables, download [load_CDMv5_vocabulary.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_vocabulary.sql) and make the following changes in this file:
-- Replace the schema name synpuf5 with the schema you created in in step (b).
-- Change BASE_OMOP_INPUT_DIRECTORY to the directory where you store your vocabulary files that you want to load into PostgreSQL.
+### Load and process the data
 
-Execute the queries in the modified file. These queries will copy the vocabulary data from csv files to the PostgreSQL database.
+Code for loading and processing is contained in the `SQL` directory found at the root of this repository. Each file should be executed at the command line in the following manner (also found in `SQL/README.md` if you need a reminder):
 
-To load the data from DE_1 to DE_20 into tables, download [load_CDMv5_synpuf.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/load_CDMv5_synpuf.sql) and make the following changes in this file:
-- Replace the schema name synpuf5 with the schema you created in in step (b)
-- Replace the location of the input csv files that you want to load to PostgreSQL.
+```
+psql 'dbname={dbname} user={username} options=--search_path={schema_name}' -f {filename.sql} -v data_dir={data_directory}
+```
 
-Execute the queries in the modified file. These queries will import the ETL .csv data from DE_1 through DE_20 to the PostgreSQL database.
+The arguments `dbname`, `username`, and `schema_name` will be the same for the entire process and should match the names used when preparing the database above. For brevity, the connection string will be replaced with `CONNECTION_STRING` in the example commands below. You may consider exporting this as an environment variable.
 
-f) Create constraints: If the step (e) executed successfully, records were inserted into tables and now primary and foreign keys can be assigned to all tables. Download
-    the sql file [create_CDMv5_constraints](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_constraints.sql) and update the schema name with the schema you created in step (b).
-    Execute the queries present in the downloaded file. Make sure you have loaded all of  your data from step (e) before running this step. If you add the constraints before loading the data, it will slow down
-    the load process because the database needs to check the constraints before adding any record to the database.
+The `data_dir` argument varies depending on the script. Below, we'll use the variable names used in the `python_etl/.env` file, though you'll need to replace them manually (the scripts do not currently read from that file).
 
-g) Though the database will create indexes for primary keys, but the queries will take minutes to execute if the search is not based on the primary keys.
-    Additional indexes based on foreign keys and other frequently used fields need to added to the tables to improve the query execution time. Download
-    the sql file [create_CDMv5_indices](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_indices.sql) and update the schema with the schema you created in step (b). Execute the queries in the modified file. This concludes the database creation, loading, and optimization.
+Do not chain all the SQL files together in a batch script, as you need to review the logs for errors and warnings before proceeding to the next step.
 
-## 8. Create ERA tables
-  Once you are done with all the steps mentioned in section (7), you can generate data for drug_era and condition_era tables as follows:
+1. The `create_CDMv5_tables.sql` file has the queries to create the OMOP CDMv5 tables, also creating the vocabulary tables within the schema. Run it like so:
 
-  a) condition_era: Download the sql file [create_CDMv5_condition_era.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_condition_era.sql) and update the schema with the
-    schema you created in step (7b). Execute the queries present in the modified file.
+        psql 'CONNECTION_STRING' -f create_CDMv5_tables.sql
 
-  b) drug_era: Download sql file [create_CDMv5 _drug_era_non_stockpile.sql](https://github.com/OHDSI/ETL-CMS/blob/master/SQL/create_CDMv5_drug_era_non_stockpile.sql) and update the schema with the
-    schema you created in step (7b). Execute the queries present in the modified file.
-  N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
+1. The `load_CDMv5_vocabulary.sql` file loads the vocabulary data into the database:
+        
+        psql 'CONNECTION_STRING' -f load_CDMv5_vocabulary.sql -v data_dir='BASE_OMOP_INPUT_DIRECTORY'
+
+1. The `load_CDMv5_synpuf.sql` file will load the data from DE_1 to DE_20 into tables. This uses the consolidated `csv` files from the `merge.py` script above. The DE-specific files are no longer referenced.
+
+        psql 'CONNECTION_STRING' -f load_CDMv5_synpuf.sql -v data_dir='BASE_OUTPUT_DIRECTORY'
+
+1. The `create_CDMv5_constraints.sql` file will assign primary and foreign keys to all tables for more efficient querying. Make sure you have loaded all of  your data before running this step. If you add the constraints before loading the data, it will slow down the load process because the database needs to check the constraints before adding any record to the database:
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_constraints.sql
 
 
-## 9. Open issues and caveats with the ETL
+1. The `create_CDMv5_indices.sql` file will add additional indexes based on foreign keys and other frequently used fields to improve the query execution time:
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_indices.sql
+
+
+### Create ERA tables
+  Once you are done loading the data and creating indices, you can generate data for drug_era and condition_era tables as follows:
+
+* condition_era: 
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_condition_era.sql
+
+
+* drug_era: 
+
+        psql 'CONNECTION_STRING' -f create_CDMv5_drug_era_non_stockpile.sql
+        
+N.B. - The queries to create drug_era and condition_era tables might take approx 48 hours.
+
+
+## Open issues and caveats with the ETL
 a) As per OHDSI documentation for the [observation](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:observation) and [measurement](http://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:measurement) tables, the fields 'value_as_string', 'value_as_number', and 'value_as_concept_id' in both tables are not mandatory, but Achilles Heels gives an error when all of these 3 fields are NULL. Achilles Heels requires one of these fields
     should have non-NULL value. So, to fix this error, field 'value_as_concept_id' has been populated with '0' in both the measurement and observation output .csv files.
 
