@@ -42,4 +42,3 @@ for file_all, file_prefix in files.items():
             os.path.join(BASE_OUTPUT_DIRECTORY,file_all), index=False, single_file=True)
 
     print(f'{file_all} - elapsed: {round(time.time() - start_time,2)}sec')
-    break
