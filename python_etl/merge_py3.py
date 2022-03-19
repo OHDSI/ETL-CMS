@@ -1,11 +1,12 @@
-# This script will merge the 20 csv files for each type into a single csv per type
-# It uses python 2.7
-#
+import os
+import dotenv
+import glob
+import pathlib
+import time
+import dask.dataframe as dd
 
-import os, dotenv
 dotenv.load_dotenv(".env")
-BASE_OUTPUT_DIRECTORY           = os.environ['BASE_OUTPUT_DIRECTORY']
-
+BASE_OUTPUT_DIRECTORY = os.environ['BASE_OUTPUT_DIRECTORY']
 
 files = {
    'care_site.csv'               : 'care_site_',
@@ -28,19 +29,17 @@ files = {
    'visit_cost.csv'              : 'visit_cost_',
    'visit_occurrence.csv'        : 'visit_occurrence_'
 }
-   
-for key, value in files.iteritems():
-    print "Processing: " + key
-    fout=open(os.path.join(BASE_OUTPUT_DIRECTORY, key),"w")
-    # first file:
-    fstring = value + "1.csv"
-    for line in open(os.path.join(BASE_OUTPUT_DIRECTORY, fstring)):
-        fout.write(line)
-    # now the rest: <- it should 21 to include 20th file
-    for num in range(2,21):
-        f = open(os.path.join(BASE_OUTPUT_DIRECTORY, value+str(num)+".csv"))
-        f.next() # skip the header
-        for line in f:
-            fout.write(line)
-        f.close() # not really needed
-    fout.close()
+
+for file_all, file_prefix in files.items():
+    start_time = time.time()
+    # list of source files
+    src_files = glob.glob(f"{os.path.join(BASE_OUTPUT_DIRECTORY,file_prefix)}*")
+    src_files = [pathlib.Path(x).as_posix() for x in src_files]
+
+    # merge all source files into one file
+    dd.concat(
+        [dd.read_csv(x, dtype=str) for x in src_files]).to_csv(
+            os.path.join(BASE_OUTPUT_DIRECTORY,file_all), index=False, single_file=True)
+
+    print(f'{file_all} - elapsed: {round(time.time() - start_time,2)}sec')
+    break
