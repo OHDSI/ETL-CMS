@@ -480,7 +480,9 @@ def build_maps():
                         else:
                             source_code_concept_dict[vocabulary_id,concept_code] = []
                             for concept in concept_relationship_dict[concept_id]:
-								if  not domain_destination_file_list.has_key(domain_dict[concept]):
+								if concept not in domain_dict:
+									status = "No domain found for mapped concept " + concept + " of concept " + concept_id
+								elif not domain_destination_file_list.has_key(domain_dict[concept]):
 									status = "No destination defined for domain " + domain_dict[concept] + " of concept " + concept_id
 								else:
 									destination_file = domain_destination_file_list[domain_dict[concept]]
